@@ -1,0 +1,183 @@
+﻿@inject HttpClient _httpClient
+@inject CustomAuthenticationStateProvider authService
+@inject NavigationManager NavigationManager
+
+
+<div class="d-xl-flex justify-content-center">
+    <EditForm Model="@Model" OnValidSubmit="@OnFormSubmit" class="mb-5 border border-1 border-secondary p-2 w-25">
+        <DataAnnotationsValidator />
+        <h4>@Page User</h4>
+        <div class="mb-3">
+            @if (Page.Equals(PageType.Delete))
+            {
+                <InputText id="name" class="form-control me-2" @bind-Value="Model.Username" disabled placeholder=" User Name"></InputText>
+            }
+            @if(Page.Equals(PageType.Create))
+            {
+                <InputText id="name" class="form-control me-2" @bind-Value="RegisterModel.Username" placeholder="User Name"></InputText>
+                <InputText id="name" class="form-control me-2" @bind-Value="RegisterModel.Email" placeholder="User Email"></InputText>
+                <InputText id="name" class="form-control me-2" @bind-Value="RegisterModel.Password" type="password" placeholder="Password"></InputText>
+                <InputText id="name" class="form-control me-2" @bind-Value="RegisterModel.ConfirmPassword" type="password" placeholder="Confirm Password"></InputText>
+                <InputSelect id="name" class="form-control me-2" @bind-Value="registerRole" placeholder="Role">
+                    @foreach (var role in Roles)
+                    {
+                        <option value="@role">@role</option>
+                    }
+                </InputSelect>
+                
+            }
+            <ValidationMessage For="@(() => RegisterModel.Username)" />
+            <ValidationMessage For="@(() => RegisterModel.Email)" />
+            <ValidationMessage For="@(() => RegisterModel.Password)" />
+            <ValidationMessage For="@(() => RegisterModel.ConfirmPassword)" />
+            @if(Page.Equals(PageType.ChangeRole))
+            {
+                <InputText id="name1" class="form-control me-2" @bind-Value="Model.Username" disabled placeholder="Username"></InputText>
+                <InputText id="name2" class="form-control me-2" @bind-Value="rolesAsString" disabled placeholder="Curent Roles"></InputText>
+                <InputSelect id="name" class="form-control me-2" @bind-Value="NewRole" placeholder="New Role">
+                    @foreach (var role in Roles)
+                    {
+                        <option value="@role">@role</option>
+                    }
+                </InputSelect>
+            }
+            @if(Page.Equals(PageType.ChangePassword))
+                {
+                <InputText id="name3" class="form-control me-2" @bind-Value="Model.Username" disabled placeholder="Username"></InputText>
+                    <InputText id="name4" class="form-control me-2" @bind-Value="oldPassword" type="password" placeholder="Current Password"></InputText>
+                <InputText id="name5" class="form-control me-2" @bind-Value="newPassword" type="password" placeholder="New Password"></InputText>
+                <InputText id="name6" class="form-control me-2" @bind-Value="confirmPassword" type="password" placeholder="Confirm Password"></InputText>
+                }
+                </div>
+        <button type="submit" class="btn btn-@(Page.Equals(PageType.Delete) ? "danger" : "success") rounded-0">@Page</button>
+
+
+    </EditForm>
+</div>
+
+@code {
+
+
+    [Parameter] public LoggedUser Model { get; set; } = new();
+    public RegisterModel RegisterModel { get; set; } = new();  
+    [Parameter] public string Page { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> OnChange { get; set; }
+    private string NewRole = string.Empty;
+    private string registerRole = string.Empty;
+    private List<string> Roles = new List<string>() { "Admin","User"};
+    private string oldPassword = string.Empty;
+    private string newPassword = string.Empty;
+    private string confirmPassword = string.Empty;
+    private string rolesAsString;
+
+    protected override void OnInitialized()
+    {     
+        rolesAsString = string.Join(", ", Model.Roles);
+    }
+    
+
+    private async Task OnFormSubmit()
+    {
+
+        try
+        {           
+            if (Page.Equals(PageType.Create))
+            {
+                var newUser = new RegisterModel()
+                    {
+                        Username = RegisterModel.Username,
+                        Email = RegisterModel.Email,
+                        Password = RegisterModel.Password,
+                        ConfirmPassword = RegisterModel.ConfirmPassword,
+                    };
+                if(registerRole.Equals("Admin"))
+                    await InsertAdmin(newUser);
+                else if(registerRole.Equals("User"))
+                    await InsertUser(newUser);
+            }
+            else if (Page.Equals(PageType.ChangePassword))
+            {
+                var changepassword = new ChangePasswordModel()
+                {
+                    Id = Model.Id,
+                    CurrentPassword = oldPassword,
+                    NewPassword = newPassword,
+                    ConfirmPassword = confirmPassword
+                };
+                await ChangePassword(changepassword);
+            }
+            else if (Page.Equals(PageType.Delete))
+            { 
+                await DeleteUser(Model.Id);
+            }
+            else if(Page.Equals(PageType.ChangeRole))
+            {
+                await ChangeRole(Model.Id,NewRole);
+            }
+
+
+            await OnChange.InvokeAsync("");
+        }
+        catch
+        {
+            await OnChange.InvokeAsync($"Couldn't process the User entry!");
+        }
+    }
+
+
+    private async Task InsertAdmin(RegisterModel registerModel)
+    {
+        try
+        {
+            string token = await authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.PostAsJsonAsync("api/Authenticate/register-admin", registerModel);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex) { Console.WriteLine(ex); }
+    }
+    private async Task InsertUser(RegisterModel registerModel)
+    {
+        try
+        {
+            // string token = await authService.GetTokenAsync();
+            // _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.PostAsJsonAsync("api/Authenticate/register", registerModel);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex) { Console.WriteLine(ex); }
+    }
+    private async Task ChangePassword(ChangePasswordModel model)
+    {
+        try
+        {
+            string token = await authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.PatchAsJsonAsync($"api/Authenticate/{model.Id}", model);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex) { Console.WriteLine(ex); }
+    }
+    private async Task  DeleteUser(int id)
+    {
+        try
+        {
+            string token = await authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.DeleteAsync($"api/Authenticate/{id}");
+            //response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex) { Console.WriteLine(ex); }
+    }
+    private async Task ChangeRole(int id,string role)
+    {
+        try
+        {
+            string token = await authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.PatchAsJsonAsync($"api/Authenticate/{id}/roles",role);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex) { Console.WriteLine(ex); }
+    }
+}

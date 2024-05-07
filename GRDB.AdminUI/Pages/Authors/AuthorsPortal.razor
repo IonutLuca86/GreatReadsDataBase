@@ -1,0 +1,152 @@
+﻿@inject HttpClient _httpClient
+@inject CustomAuthenticationStateProvider authService
+@inject NavigationManager NavigationManager
+
+
+
+<AuthorizeView>
+    <Authorized>
+        @if (!string.IsNullOrEmpty(Alert))
+        {
+            <div class="d-flex">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>@Alert</strong>
+                    <button type="button" @onclick="CloseAlert" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+        <h3>@Navigation</h3>
+        @if (Navigation == PageType.Create)
+        {
+            <ChangeAuthor Page="@Navigation" OnChange="OnChange"></ChangeAuthor>
+        }
+        @if (Navigation == PageType.Delete || Navigation == PageType.Edit)
+        {
+            <ChangeAuthor Page="@Navigation" OnChange="OnChange" Model="Author"></ChangeAuthor>
+        }
+
+        <div class="d-flex me-1">
+            <a href="/" class="btn btn-outline-secondary rounded-0 me-1">Home</a>
+            <button type="button" class="btn btn-outline-primary rounded-0 me-1" @onclick="()=>ChangePageType(PageType.Index)">Index</button>
+            <button type="button" class="btn btn-outline-success rounded-0 me-5" @onclick="()=>ChangePageType(PageType.Create)">Create</button>
+            <div class="search-container">
+                <input type="text" @bind="searchText" placeholder="Search authors...">
+                <button @onclick="Search" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+
+        <AuthorsIndex Model="Model" OnClick="OnClick"></AuthorsIndex>
+
+        </Authorized>
+        <NotAuthorized>
+            <p>You are not authorized to access this page. Please log in. Redirecting to the login page...</p>
+        </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    public List<AuthorDTO> Model { get; set; } = new();
+    [Parameter] public string Alert { get; set; } = string.Empty;
+    [Parameter] public string Navigation { get; set; } = string.Empty;
+    AuthorDTO? Author { get; set; }
+
+    private string searchText;
+    private List<AuthorDTO> searchResults;
+    private List<AuthorDTO> OriginalAuthorsList;
+
+    private async Task Search()
+    {
+        if (OriginalAuthorsList == null)
+        {
+            OriginalAuthorsList = await GetAuthors();
+        }
+    
+        if (OriginalAuthorsList != null && !string.IsNullOrEmpty(searchText))
+        {
+            searchResults = OriginalAuthorsList
+                .Where(author => author.AuthorName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            Model = searchResults;
+        }
+        else
+        {            
+            Model = OriginalAuthorsList ?? new List<AuthorDTO>();
+        }
+        searchText = string.Empty;
+    }
+
+    async Task ChangePageType(string pageType)
+    {
+        Navigation = pageType;
+        if (pageType == PageType.Index) 
+        {
+            if(OriginalAuthorsList == null)
+            {
+                OriginalAuthorsList =await GetAuthors();
+            }
+            Model = OriginalAuthorsList;
+            searchText = string.Empty;
+        }
+
+    } 
+    void CloseAlert() => Alert = string.Empty;
+
+  
+
+    protected override async Task OnInitializedAsync()
+    {
+            var isAuthenticated = await authService.IsAuthenticatedAsync();
+            if (!isAuthenticated)
+            {
+                NavigationManager.NavigateTo("/Login");
+            }
+            else
+            {
+                Alert = string.Empty;
+                OriginalAuthorsList = await GetAuthors();
+                Model = OriginalAuthorsList;
+            }    
+
+    }
+    public async Task OnClick(ClickModel model)
+    {
+
+        if (model.PageType.Equals(PageType.Edit) || model.PageType.Equals(PageType.Delete))
+            Author = await GetAuthors(model.id);
+        
+       
+        ChangePageType(model.PageType);
+
+
+    }
+    public async Task OnChange(string alert)
+    {
+        try
+        {
+            Alert = alert;
+            Model = await GetAuthors();
+            OriginalAuthorsList = Model;
+            ChangePageType(PageType.Index);
+        }
+        catch
+        {
+            Alert = $"Couldn't {PageType.Index} the Author entry!";
+        }
+    }
+    private async Task<List<AuthorDTO>> GetAuthors()
+    {
+        var response = await _httpClient.GetAsync("api/Authors");
+        var content = await response.Content.ReadAsStringAsync();
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        return JsonSerializer.Deserialize<List<AuthorDTO>>(content, options) ;
+    }
+    
+    private async Task<AuthorDTO> GetAuthors(int id)
+    {
+        var response = await _httpClient.GetAsync($"api/Authors/{id}");
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<AuthorDTO>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    }
+
+
+}

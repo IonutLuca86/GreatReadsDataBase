@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Merienda:wght@300;400;500;700&family=Poppins:ital,wght@0,300;0,500;1,200&family=Quicksand&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+li {
+    list-style: none;
+    display: flex;
+}
+
+.navbar {
+    background: rgb(178, 178, 243);
+    height: 10vh;
+    line-height: 10vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+}
+
+.logo {
+    font-size: 30px;
+
+}
+
+a {
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    justify-content: flex-end;
+    width: 75%;
+}
+
+.nav-links li {
+    color: black;
+    font-size: 20px;
+    padding: 0 10px;
+    margin: 0 10px;
+    cursor: pointer;
+    text-transform: capitalize;
+}
+
+
+.active{
+    background: #ffffff;
+    transition: all 0.5s ease-in-out;
+}
+.nav-links a {
+    text-decoration: none;
+}
+
+.hero h1 {
+    text-align: center;
+    font-size: 80px;
+}
+
+button {
+    border: none;
+    background: none;
+    font-size: 20px;
+}
+
+.mobile-menu-icon {
+    display: none;
+}
+
+@media (max-width:768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .nav-links-mobile {
+        position: absolute;
+        display: block;
+        list-style: none;
+        box-shadow: rgba(50, 50, 93, .23) 0 30px 30px -20px;
+        left: 0;
+        top: 10%;
+        transition: all 0.5s ease-in-out;
+        width: 100%;
+        background-color: #ffffff;
+    }
+
+    ul li {
+        padding: 10px;
+        width: 100%;
+        transition: all 0.5s ease-in-out;
+        text-align: center;
+        color: rgb(22, 22, 22);
+    }
+
+    .mobile-menu-icon {
+        position: absolute;
+        display: block;
+        right: 20px;
+        color: #000000b1;
+    }
+
+    .hero h1 {
+        font-size: 50px;
+    }
+}
+
+
+/* testing */
+.testing {
+    width: 100%;
+    height: 100vh;
+    background: rgb(178, 178, 243);
+}

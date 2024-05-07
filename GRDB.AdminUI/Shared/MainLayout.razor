@@ -1,0 +1,39 @@
+﻿@inherits LayoutComponentBase
+@inject CustomAuthenticationStateProvider authService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Great Reads Database  Management Portal</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            @*   @if(!isAuthenticated)
+            {
+            <a href="/login">Log In</a>
+            }   *@
+            <a href="/About">About</a>
+            <a href="/Contact">Contact</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private bool isAuthenticated = false;
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     isAuthenticated = await authService.IsAuthenticated();
+    //     if (!isAuthenticated)
+    //     {
+    //         NavigationManager.NavigateTo("/login", forceLoad: true);
+    //     }
+    // }
+}

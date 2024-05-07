@@ -1,0 +1,145 @@
+﻿
+@inject CustomAuthenticationStateProvider authService
+@inject NavigationManager NavigationManager
+@inject HttpClient _httpClient
+
+
+
+<AuthorizeView>
+    <Authorized>
+        @if (!string.IsNullOrEmpty(Alert))
+        {
+            <div class="d-flex">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>@Alert</strong>
+                    <button type="button" @onclick="CloseAlert" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+        <h3>@Navigation</h3>
+        @if (Navigation == PageType.Create)
+        {
+            <ChangeGenre Page="@Navigation" OnChange="OnChange"></ChangeGenre>
+        }
+        @if (Navigation == PageType.Delete || Navigation == PageType.Edit)
+        {
+            <ChangeGenre Page="@Navigation" OnChange="OnChange" Model="Genre"></ChangeGenre>
+        }
+
+        <div class="d-flex me-1">
+            <a href="/" class="btn btn-outline-secondary rounded-0 me-1">Home</a>
+            <button type="button" class="btn btn-outline-primary rounded-0 me-1" @onclick="()=>ChangePageType(PageType.Index)">Index</button>
+            <button type="button" class="btn btn-outline-success rounded-0 me-5" @onclick="()=>ChangePageType(PageType.Create)">Create</button>
+            <div class="search-container">
+                <input type="text" @bind="searchText" placeholder="Search genres...">
+                <button @onclick="Search" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+
+        <GenresIndex Model="Model" OnClick="OnClick"></GenresIndex>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized to access this page. Please log in. Redirecting to the login page...</p>
+        </NotAuthorized>
+</AuthorizeView>
+    
+
+@code {
+
+    public List<GenreDTO> Model { get; set; } = new();
+    [Parameter] public string Alert { get; set; } = string.Empty;
+    [Parameter] public string Navigation { get; set; } = string.Empty;
+    GenreDTO? Genre { get; set; }
+
+    private string searchText;
+    private List<GenreDTO> searchResults;
+    private List<GenreDTO> OriginalGenresList;
+
+    private async Task Search()
+    {
+        if (OriginalGenresList == null)
+        {
+            OriginalGenresList = await GetGenres();
+        }
+
+        if (OriginalGenresList != null && !string.IsNullOrEmpty(searchText))
+        {
+            searchResults = OriginalGenresList
+                .Where(genre => genre.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            Model = searchResults;
+        }
+        else
+        {
+            Model = OriginalGenresList ?? new List<GenreDTO>();
+        }
+        searchText = string.Empty;
+    }
+
+    async Task ChangePageType(string pageType)
+    {
+        Navigation = pageType;
+        if (pageType == PageType.Index)
+        {
+            if(OriginalGenresList == null)
+                OriginalGenresList = await GetGenres();
+            Model = OriginalGenresList;
+            searchText = string.Empty;
+        }
+
+    }
+    void CloseAlert() => Alert = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+                var isAuthenticated = await authService.IsAuthenticatedAsync();
+                if (!isAuthenticated)
+                {
+                    NavigationManager.NavigateTo("/Login");
+                }
+                else
+                {
+                    Alert = string.Empty;
+                    OriginalGenresList = await GetGenres();
+                    Model = OriginalGenresList;
+                }
+      
+    }
+    public async Task OnClick(ClickModel model)
+    {
+
+        if (model.PageType.Equals(PageType.Edit) || model.PageType.Equals(PageType.Delete))
+            Genre = await GetGenres(model.id);
+        ChangePageType(model.PageType);
+
+
+    }
+    public async Task OnChange(string alert)
+    {
+        try
+        {
+            Alert = alert;
+            Model = await GetGenres();
+            OriginalGenresList = Model;
+            ChangePageType(PageType.Index);
+        }
+        catch
+        {
+            Alert = "Couldn't process the Genre entry!";
+        }
+    }
+    private async Task<List<GenreDTO>> GetGenres()
+    {
+        var response = await _httpClient.GetAsync("api/Genre");
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<List<GenreDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    }
+    private async Task<GenreDTO> GetGenres(int id)
+    {
+        var response = await _httpClient.GetAsync($"api/Genre/{id}");
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<GenreDTO>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    }
+
+}
+

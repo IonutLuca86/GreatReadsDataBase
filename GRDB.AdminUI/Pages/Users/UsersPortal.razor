@@ -1,0 +1,169 @@
+﻿@inject HttpClient _httpClient
+@inject CustomAuthenticationStateProvider authService
+@inject NavigationManager NavigationManager
+
+<AuthorizeView>
+    <Authorized>
+        @if (!string.IsNullOrEmpty(Alert))
+        {
+            <div class="d-flex">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>@Alert</strong>
+                    <button type="button" @onclick="CloseAlert" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+        <h3>@Navigation</h3>
+        @if (Navigation == PageType.Create)
+        {
+            <ChangeUser Page="@Navigation" OnChange="OnChange"></ChangeUser>
+        }
+        @if (Navigation == PageType.Delete || Navigation == PageType.Edit || Navigation == PageType.ChangeRole || Navigation == PageType.ChangePassword)
+        {
+            <ChangeUser Page="@Navigation" OnChange="OnChange" Model="ModelUser"></ChangeUser>
+        }
+
+        <div class="d-flex me-1">
+            <a href="/" class="btn btn-outline-secondary rounded-0 me-1">Home</a>
+            <button type="button" class="btn btn-outline-primary rounded-0 me-1" @onclick="()=>ChangePageType(PageType.Index)">Index</button>
+            <button type="button" class="btn btn-outline-success rounded-0 me-5" @onclick="()=>ChangePageType(PageType.Create)">Create</button>
+            <div class="search-container">
+                <input type="text" @bind="searchText" placeholder="Search authors...">
+                <button @onclick="Search" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+
+        <UsersIndex Model="ModelUsers" OnClick="OnClick"></UsersIndex>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized to access this page. Please log in. Redirecting to the login page...</p>
+        </NotAuthorized>
+</AuthorizeView>
+    
+
+@code {
+    public List<LoggedUser> ModelUsers { get; set; } = new();
+    [Parameter] public string Alert { get; set; } = string.Empty;
+    [Parameter] public string Navigation { get; set; } = string.Empty;
+    LoggedUser? ModelUser { get; set; }
+
+
+    private string searchText;
+    private List<LoggedUser> searchResults;
+    private List<LoggedUser> OriginalUsersList;
+
+    private async Task Search()
+    {
+        if (OriginalUsersList == null)
+        {
+            OriginalUsersList = await GetUsers();
+        }
+
+        if (OriginalUsersList != null && !string.IsNullOrEmpty(searchText))
+        {
+            searchResults = OriginalUsersList
+                .Where(user => user.Username.Contains(searchText, StringComparison.OrdinalIgnoreCase) || user.Email.Contains(searchText, StringComparison.OrdinalIgnoreCase))               
+                .ToList();
+            ModelUsers = searchResults;
+        }
+        else
+        {
+            ModelUsers = OriginalUsersList ?? new List<LoggedUser>();
+        }
+        searchText = string.Empty;
+    }
+
+
+    async Task ChangePageType(string pageType)
+    {
+        Navigation = pageType;
+        if (pageType == PageType.Index)
+        {
+            if (OriginalUsersList == null)
+                OriginalUsersList = await GetUsers();
+            ModelUsers = OriginalUsersList;
+            searchText= string.Empty;
+        }
+
+    }
+    void CloseAlert() => Alert = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await authService.IsAuthenticatedAsync();
+        if (!isAuthenticated)
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            Alert = string.Empty;
+            OriginalUsersList = await GetUsers();
+            ModelUsers = OriginalUsersList;
+        }
+    }      
+   
+    public async Task OnClick(ClickModel model)
+    {
+
+        if (model.PageType.Equals(PageType.Edit) || model.PageType.Equals(PageType.Delete))
+            ModelUser = await GetUser(model.id);
+        if (model.PageType.Equals(PageType.ChangePassword) || model.PageType.Equals(PageType.ChangeRole))
+            ModelUser = await GetUser(model.id);
+        ChangePageType(model.PageType);
+
+
+    }
+    public async Task OnChange(string alert)
+    {
+        try
+        {
+            Alert = alert;
+            ModelUsers = await GetUsers();
+            OriginalUsersList = ModelUsers;
+            ChangePageType(PageType.Index);
+        }
+        catch
+        {
+            Alert = "Couldn't create/edit/delete the Genre entry!";
+        }
+    }
+    private async Task<List<LoggedUser>> GetUsers()
+    {
+        try
+        {
+            string token = await authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.GetAsync("api/Authenticate");
+            if (response.IsSuccessStatusCode)
+            {
+                // Read the response content
+                var content = await response.Content.ReadAsStringAsync();
+
+                // Deserialize the JSON content into a list of LoggedUser objects
+                var users = JsonSerializer.Deserialize<List<LoggedUser>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return users;
+            }
+            else
+            {
+                // Handle unsuccessful response
+                Console.WriteLine("Failed to fetch users. Status code: " + response.StatusCode);
+                return new List<LoggedUser>();
+            }
+           
+        }
+        catch (Exception ex) { Console.WriteLine(ex); return new List<LoggedUser>(); }
+    }
+    private async Task<LoggedUser> GetUser(int id)
+    {
+        try
+        {
+            string token = await authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _httpClient.GetAsync($"api/Authenticate/{id}");
+        var user = await response.Content.ReadFromJsonAsync<LoggedUser>();
+        return user;
+        }
+        catch (Exception ex) { Console.WriteLine(ex); return new LoggedUser(); }
+    }
+}

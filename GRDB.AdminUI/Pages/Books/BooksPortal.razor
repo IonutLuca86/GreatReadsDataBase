@@ -1,0 +1,157 @@
+﻿
+@inject CustomAuthenticationStateProvider authService
+@inject NavigationManager NavigationManager
+@inject HttpClient _httpClient
+
+
+<AuthorizeView>
+    <Authorized>
+        @if (!string.IsNullOrEmpty(Alert))
+        {
+            <div class="d-flex">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>@Alert</strong>
+                    <button type="button" @onclick="CloseAlert" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+        <h3>@Navigation</h3>
+        @if (Navigation == PageType.Create)
+        {
+            <ChangeBook Page="@Navigation" OnChange="OnChange"></ChangeBook>
+        }
+
+        @if (Navigation == PageType.Delete || Navigation == PageType.Edit)
+        {
+            <ChangeBook Page="@Navigation" OnChange="OnChange" Model="Book"></ChangeBook>
+        }
+
+
+        <div class="d-flex me-1">
+            <a href="/" class="btn btn-outline-secondary rounded-0 me-1">Home</a>
+            <button type="button" class="btn btn-outline-primary rounded-0 me-1" @onclick="()=>ChangePageType(PageType.Index)">Index</button>
+            <button type="button" class="btn btn-outline-success rounded-0 me-5" @onclick="()=>ChangePageType(PageType.Create)">Create</button>
+            <div class="search-container">
+                <input type="text" @bind="searchText" placeholder="Search books...">
+                <button @onclick="Search" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+ 
+        <BooksIndex Model="Model" OnClick="OnClick"></BooksIndex>
+
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized to access this page. Please log in. Redirecting to the login page...</p>
+    </NotAuthorized>
+</AuthorizeView>
+    
+
+@code {
+
+    public List<BookDTO> Model { get; set; } = new();
+    [Parameter] public string Alert { get; set; } = string.Empty;
+    [Parameter] public string Navigation { get; set; } = string.Empty;
+    BookDTO? Book { get; set; }
+
+    private List<BookDTO> originalModel;
+    private string searchText;
+
+
+    private async Task Search()
+    {
+        Console.WriteLine("Search button clicked."); // Debugging statement
+        Console.WriteLine("Search text: " + searchText); // Debugging statement
+
+        if (originalModel == null)
+        {
+            originalModel = await GetBooks(); // Fetch the original list if not fetched already
+        }
+
+        if (!string.IsNullOrEmpty(searchText))
+        {
+            var searchResults = originalModel.Where(book =>
+     book.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+     book.Authors.Any(x => x.AuthorName.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+     book.ISBN.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+     book.Language.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+     book.BookGenres.Any(x => x.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+     book.Publisher.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+     book.BookUrl.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+     ).ToList();
+
+            Console.WriteLine("Search results count: " + searchResults.Count); // Debugging statement
+
+            Model = searchResults;
+        }
+        else
+        {
+            Console.WriteLine("Search text is empty. Resetting Model to original list."); // Debugging statement
+            Model = originalModel; // Reset Model to the original list when search text is empty
+        }
+    }
+
+
+    async Task ChangePageType(string pageType)
+    {
+        Navigation = pageType;
+        if (pageType == PageType.Index)
+        {
+            if (originalModel == null)
+            {
+                originalModel = await GetBooks(); // Fetch the original list if not fetched already
+            }
+            Model = originalModel;
+            searchText = string.Empty;
+        }
+    }
+    void CloseAlert() => Alert = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+      
+           var isAuthenticated = await authService.IsAuthenticatedAsync();
+            if (isAuthenticated)
+            {
+                Alert = string.Empty;
+            originalModel = await GetBooks(); // Store the original list
+            Model = originalModel;
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/Login");
+            }
+          
+       
+    }
+    public async Task OnClick(ClickModel model)
+    {      
+        Book = await GetBook(model.id);
+        ChangePageType(model.PageType);
+    }
+    public async Task OnChange(string alert)
+    {
+        try
+        {
+            Alert = alert;
+            Model = await GetBooks();
+            originalModel = Model;
+            ChangePageType(PageType.Index);
+        }
+        catch
+        {
+            Alert = $"Couldn't access entry!";
+        }
+    }
+    private async Task<List<BookDTO>> GetBooks()
+    {
+        var response =  await _httpClient.GetAsync("api/Books");
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<List<BookDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<BookDTO>();
+    }
+    private async Task<BookDTO> GetBook(int id)
+    {
+        var response = await _httpClient.GetAsync($"api/Books/{id}");
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<BookDTO>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    }
+}

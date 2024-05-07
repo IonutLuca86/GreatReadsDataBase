@@ -1,0 +1,45 @@
+﻿
+
+@if(Model != null && Model.Any())
+{
+   <table class="table mt-2">
+        <thead>
+            <tr>
+                <th class="ms-5">User ID</th>
+                <th class="ms-5">User Name</th>
+                <th class="ms-5">User Email</th>
+                <th class="ms-5">User Roles</th>
+                <th><div class="d-flex me-1 justify-content-end px-2"><p>Actions</p></div></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Username</td>
+                    <td>@item.Email</td>
+                    <td>@string.Join(',',item.Roles)</td>
+                    <td>
+                        <div class="d-flex me-1 justify-content-end">
+                            <button class="btn btn-outline-primary rounded-0 me-1" @onclick="@(() => OnClick.InvokeAsync(new ClickModel(PageType.ChangePassword,item.Id)))">Change Password</button>
+                            <button class="btn btn-outline-primary rounded-0 me-1" @onclick="@(() => OnClick.InvokeAsync(new ClickModel(PageType.ChangeRole, item.Id)))">Change Role</button>
+                            <button class="btn btn-outline-danger rounded-0" @onclick="@(() => OnClick.InvokeAsync(new ClickModel(PageType.Delete, item.Id)))">Delete</button>                           
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+ }   
+else
+    {
+<p>No authors found</p>
+    }
+
+
+@code {
+    [Parameter] public List<LoggedUser> Model { get; set; } = new();
+    [Parameter] public EventCallback<ClickModel> OnClick { get; set; }
+
+}

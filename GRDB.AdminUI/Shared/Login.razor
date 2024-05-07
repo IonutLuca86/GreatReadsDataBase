@@ -1,0 +1,97 @@
+﻿
+
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient _httpClient
+@inject CustomAuthenticationStateProvider _authenticationService
+@inject NavigationManager NavigationManager
+
+
+
+
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+<EditForm Model="@loginModel" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="username">Username</label>
+        <InputText id="username" class="form-control" @bind-Value="loginModel.Username" />
+        <ValidationMessage For="@(() => loginModel.Username)" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <InputText id="password" class="form-control" type="password" @bind-Value="loginModel.Password" />
+        <ValidationMessage For="@(() => loginModel.Password)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-4 w-10">Login</button>
+</EditForm>
+
+@code {
+
+    [Parameter] public LoginModel loginModel { get; set; } = new();
+    public LoggedUser User { get; set; } = new();
+    private string errorMessage = string.Empty;
+    public bool isSubmitting = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true;
+        try
+        {
+
+            var result = await CheckCredentials();
+
+            if (!string.IsNullOrEmpty(result.Token))
+            {
+                await _authenticationService.MarkUserAsAuthenticated(result.Token);
+                User = result.User;
+                if (User.Roles.Contains("Admin"))
+                {       
+                    await _authenticationService.SessionUserInformation(User);
+                    NavigationManager.NavigateTo("/",forceLoad:true);
+                   
+                }
+
+                else
+                {
+                    errorMessage = "You are not authorized to access this page";
+                    await _authenticationService.MarkUserAsLoggedOut();
+                }
+               
+            }
+            else
+            {
+                errorMessage = "Invalid username or password";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        isSubmitting = false;
+    }
+    private async Task<AuthenticationResult> CheckCredentials()
+    {
+        var response = await _httpClient.PostAsJsonAsync("api/Authenticate/login", loginModel);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<AuthenticationResult>();
+    }
+
+}

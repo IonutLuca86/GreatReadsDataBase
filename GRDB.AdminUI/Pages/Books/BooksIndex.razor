@@ -1,0 +1,81 @@
+﻿
+@if(Model != null && Model.Any())
+{
+<table class="table mt-2">
+    <thead>
+        <tr class="w-100">
+            <th class="mx-5 px-7">Book Cover</th>
+            <th class="mx-5 px-7">Book Info</th>
+                <th><div class="d-flex me-1 justify-content-end px-2"><p>Actions</p></div></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="align-content-center">
+                    <img src="@item.CoverUrl" style="width: 20vw; height: auto;" />
+                </td>
+                <td>
+                    <div class="d-flex me-1 flex-column justify-content-start align-items-center">
+                        <div><span>Book Title: </span>@item.Title</div>
+                        <div><span>ISBN: </span>@item.ISBN</div>
+                            @if (item.Authors != null && item.Authors.Any())
+                            {
+                                <div>
+                                    <span>Authors: </span>
+                                    @foreach (var author in item.Authors)
+                                    {
+                                        <span>@author.AuthorName</span>
+                                        if (author != item.Authors.Last())
+                                        {
+                                            <span>, </span>
+                                        }
+                                    }
+                                </div>
+                            }
+
+                            @if (item.BookGenres != null && item.BookGenres.Any())
+                            {
+                                <div>
+                                    <span>Genres: </span>
+                                    @foreach (var genre in item.BookGenres)
+                                    {
+                                        <span>@genre.Name</span>
+                                        if (genre != item.BookGenres.Last())
+                                        {
+                                            <span>, </span>
+                                        }
+                                    }
+                                </div>
+                            }
+                       
+                        <div><span>Publisher: </span>@item.Publisher</div>
+                        <div><span>Published date: </span>@item.PublishedDate</div>
+                        <div><span>Language: </span>@item.Language</div>
+                        <div><span>Book URL: </span><a href="@item.BookUrl" target="_blank">@item.BookUrl</a></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="d-flex flex-row me-1 justify-content-end align-items-center">
+                        <button class="btn btn-outline-primary rounded-2 me-1" @onclick="@(() => OnClick.InvokeAsync(new ClickModel(PageType.Edit, item.Id)))">Edit</button>
+                        <button class="btn btn-outline-danger rounded-2" @onclick="@(() => OnClick.InvokeAsync(new ClickModel(PageType.Delete, item.Id)))">Delete</button>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+}
+else
+    {
+        <p>No authors found</p>
+    }
+
+@code {
+
+    [Parameter] public List<BookDTO> Model { get; set; } = new();
+    [Parameter] public EventCallback<ClickModel> OnClick { get; set; }
+
+ 
+}

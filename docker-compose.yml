@@ -1,0 +1,71 @@
+version: '3.4'
+
+services:
+  grdb.adminui:
+    container_name: adminui
+    image: ${DOCKER_REGISTRY-}grdbadminui
+    build:
+      context: .
+      dockerfile: GRDB.AdminUI/Dockerfile
+    ports:
+      - 5000:90 
+    restart: on-failure
+    networks:
+      - local-network
+
+  sqldb:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqldb
+    restart: always       
+    environment:
+      ACCEPT_EULA: 'Y'
+      MSSQL_SA_PASSWORD: "${DBPASSWORD}" 
+      MSSQL_PID: "Express"
+      MSSQL_TCP_PORT: 1433 
+    volumes:
+      - ./sql-data:/var/opt/mssql/data
+    ports:
+        - "1433:1433" 
+    networks:
+       local-network:
+
+  grdb.adminui.server:
+    container_name: backend
+    image: ${DOCKER_REGISTRY-}grdbadminuiserver
+    build:
+      context: .
+      dockerfile: GRDB.ServerAPI/Dockerfile
+    ports:
+     - 5500:80
+    depends_on:
+      - sqldb
+    environment:
+     - DBHOST = ${DBHOST}
+     - DBUSER = ${DBUSER}
+     - DBPASSWORD = ${DBPASSWORD}     
+     - DBNAME = ${DBNAME}
+     - DBPORT = ${DBPORT} 
+    env_file:
+      - ./.env
+    restart: on-failure
+    networks:
+      local-network:
+
+  storage:
+    container_name: BlobStorage
+    image: mcr.microsoft.com/azure-storage/azurite   
+    ports:
+        - "10000:10000"
+        - "10001:10001"
+        - "10002:10002"
+    volumes:
+        - ./azurite:/workspace 
+    restart: 
+        on-failure
+    networks:
+      local-network:
+
+volumes:
+   sql-data:
+networks:
+   local-network:

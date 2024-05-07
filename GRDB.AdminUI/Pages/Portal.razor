@@ -1,0 +1,39 @@
+﻿@page "/{Route}"
+
+
+@if(Route == Routes.Login)
+{
+    <Login />
+}
+@if (Route == Routes.About)
+{
+    <About />
+}
+@if (Route == Routes.Contact)
+{
+    <Contact />
+}
+
+@if(Route == Routes.Books)
+{
+    @using GRDB.AdminUI.Pages.Books
+    <BooksPortal />
+}
+@if(Route == Routes.Authors)
+{
+    @using GRDB.AdminUI.Pages.Authors
+    <AuthorsPortal />
+}
+@if (Route == Routes.Genres)
+{
+    @using GRDB.AdminUI.Pages.Genres
+        <GenresPortal />
+}
+@if (Route.Equals(Routes.Users))
+{
+    @using GRDB.AdminUI.Pages.Users
+        <UsersPortal />
+}
+@code {
+    [Parameter] public string Route { get; set; } = string.Empty;
+}

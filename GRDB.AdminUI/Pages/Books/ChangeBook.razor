@@ -1,0 +1,445 @@
+﻿
+@inject CustomAuthenticationStateProvider authService
+@inject NavigationManager NavigationManager
+
+
+
+<div class="d-xl-flex justify-content-center">
+    <EditForm Model="@Model" OnValidSubmit="@OnFormSubmit" class="mb-5 border border-1 border-secondary p-2 w-125">
+        <DataAnnotationsValidator />
+        <h4>@Page Books</h4>
+        <div class="mb-6 d-flex flex-column justify-content-between align-items-center">
+            @if (Page.Equals(PageType.Delete))
+            {
+                <InputText id="name" class="form-control me-2" @bind-Value="Model.Title" disabled placeholder="Book Title"></InputText>
+            }            
+            <ValidationMessage For="@(() => Model.Title)" />
+            @if(Page.Equals(PageType.Create) || Page.Equals(PageType.Edit))
+            {
+                <InputText id="title" class="form-control me-2 mb-2" @bind-Value="Model.Title"  placeholder="Book Title"></InputText>
+                <ValidationMessage For="@(() => Model.Title)" />
+                <InputText id="title" class="form-control me-2 mb-2" @bind-Value="Model.ISBN" placeholder="ISBN"></InputText>
+                <ValidationMessage For="@(() => Model.ISBN)" />
+                <div class="d-flex flex-column  align-items-between justify-content-center mt-2 w-100">
+                    <p class="add-info">If Author not present in the list you need to add it first!</p>
+                    <p class="add-info">You can also select multiple authors by adding each one individually!</p>
+                    
+                    <div class="d-flex flex-row justify-content-between align-items-center w-100">
+                        <InputText id="title" class="form-control me-2" @bind-Value="displayAuthors" disabled placeholder="@displayAuthors"></InputText>
+                    @if (!isAuthorFormVisible)
+                    {
+                        <button type="button" class="btn btn-outline-primary rounded-2 me-1" @onclick="AddAuthor">Add</button>
+                            <button type="button" class="btn btn-outline-primary rounded-2 me-1" @onclick="AddAuthor">Clear</button>
+                    }
+                    </div>
+                    @if (isAuthorFormVisible)
+                    {
+                        <div class="mb-5 border border-1 border-secondary p-2 w-85">
+                            <InputSelect @bind-Value="selectedAuthorId" class="form-control mb-3" placeholder="Select Author">
+                                <option value=0> Select Author ...</option>
+                                @if (Authors != null)
+                                {
+                                    foreach (var author in Authors)
+                                    {
+                                        <option value="@author.Id">@author.AuthorName</option>
+                                    }
+                                }
+                            </InputSelect>
+                            <div class="d-flex flex-row justify-content-evenly align-items-center">
+                                <button type="button" @onclick="AddSelectedAuthor" class="btn btn-success rounded-2 align-item-center">Add Author</button>
+                                <button type="button" @onclick="CancelAuthor" class="btn btn-success rounded-2 align-item-center">Cancel</button>
+                            </div>
+                        </div>
+                        
+
+                    }
+
+                </div>
+
+                <div class="d-flex flex-column  align-items-between justify-content-center mt-2 w-100">
+                    <p class="add-info">If Genre is not present in the list you need to add it first!</p>
+                    <p class="add-info">You can also select multiple genres by adding each one individually!</p>
+                    <div class="d-flex flex-row justify-content-between align-items-center w-100">
+                        <InputText id="title" class="form-control me-2" @bind-Value="displayGenres" disabled placeholder="@displayGenres"></InputText>
+                        @if (!isGenreFormVisible)
+                        {
+                          
+                                <button type="button" class="btn btn-outline-primary rounded-2 align-item-center " @onclick="AddGenre">Add</button>
+                                <button type="button" class="btn btn-outline-primary rounded-2 align-item-center ms-2" @onclick="ClearGenre">Clear</button>
+                        
+                            
+                        }
+                    </div>
+                    
+
+                    @if (isGenreFormVisible)
+                    {
+                        <div class="mb-2 border border-1 border-secondary p-2 mt-2 w-80 align-items-center">
+                            <InputSelect @bind-Value="selectedGenreId" class="form-control mb-3" placeholder="Select Genre">
+                                <option value=0> Select Genre ...</option>
+                                @if (Genres != null)
+                                {
+                                    foreach (var genre in Genres)
+                                    {
+                                        <option value="@genre.Id">@genre.Name</option>
+                                    }
+                                }
+                            </InputSelect>
+                           <div class="d-flex flex-row justify-content-evenly align-items-center">
+                            <button type="button" @onclick="AddSelectedGenre" class="btn btn-success rounded-2 align-item-center">Add Genre</button>
+                                <button type="button" @onclick="CancelGenre" class="btn btn-success rounded-2 align-item-center">Cancel</button>
+                            </div>
+                        </div>
+                       
+
+                    }
+                </div>
+               
+            
+                <InputText id="title" class="form-control me-2 mb-2 mt-2" @bind-Value="Model.Publisher"  placeholder="Publisher"></InputText>
+                <ValidationMessage For="@(() => Model.Publisher)" />
+                <InputText id="title" class="form-control me-2 mb-2" @bind-Value="Model.PublishedDate" placeholder="Published Date"></InputText>
+                <ValidationMessage For="@(() => Model.PublishedDate)" />
+                <InputText id="title" class="form-control me-2 mb-2" @bind-Value="Model.Language" placeholder="Language"></InputText>
+                <ValidationMessage For="@(() => Model.Title)" />
+                <InputText id="title" class="form-control me-2 mb-2" @bind-Value="Model.BookUrl" placeholder="Book Url"></InputText>
+                <ValidationMessage For="@(() => Model.BookUrl)" />
+                <InputText id="title" class="form-control me-2 mb-2" @bind-Value="Model.CoverUrl" placeholder="Cover Url"></InputText>
+                <ValidationMessage For="@(() => Model.CoverUrl)" />
+                <div class="d-flex flex-column  align-items-between justify-content-center mt-2 w-100 mb-4">
+                    <InputFile  name="uploadimage" accept="image/*"  OnChange="@HandleFileSelect"  />
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @errorMessage
+                        </div>
+                    }
+                </div>
+                @if(!string.IsNullOrEmpty(Model.CoverUrl))
+                {
+                    <img src="@Model.CoverUrl" class="cover-image" />
+                }
+               
+
+            }
+        </div>      
+  
+        <button type="submit" class="btn btn-@(Page.Equals(PageType.Delete) ? "danger" : "success") rounded-0">@Page</button>
+
+
+    </EditForm>
+</div>
+
+@code {
+
+    [Inject] private HttpClient _httpClient { get; set; } 
+    [Parameter] public BookDTO Model { get; set; } = new();
+    [Parameter] public string Page { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> OnChange { get; set; }
+    [Parameter] public EventCallback<ClickModel> OnClick { get; set; }
+    List<GenreDTO> Genres { get; set; } = new();
+    List<GenreDTO> selectedGenres = new();
+    private string displayGenres = string.Empty;
+    List<AuthorDTO> Authors { get; set; } = new();
+    List<AuthorDTO> selectedAuthors = new();
+    private string displayAuthors = string.Empty;
+    private string selectedCoverImage = string.Empty;
+    private string errorMessage = string.Empty;
+    private int selectedAuthorId;
+    private int selectedGenreId;
+    private bool isAuthorFormVisible = false;
+    private bool isGenreFormVisible = false;
+    private bool isAuthenticated;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (!await authService.IsAuthenticatedAsync())
+        {
+            NavigationManager.NavigateTo("/Login");
+        }
+        Genres = await GetGenres();
+        Authors = await GetAuthors();
+        if(Model.Authors.Any())
+            {
+            selectedAuthors = Model.Authors;
+            displayAuthors = string.Join(", ", Model.Authors.Select(a => a.AuthorName));
+            }
+        if(Model.BookGenres.Any())
+        {
+            selectedGenres = Model.BookGenres;
+            displayGenres = string.Join(", ", Model.BookGenres.Select(a => a.Name));
+        }
+
+
+    }
+
+    private async Task OnFormSubmit()
+    {
+        string pageType = string.Empty;
+        var currentUser = await authService.GetCurrentUser();
+        try
+        {
+            if (Page.Equals(PageType.Create))
+            {
+                var book = new BookCreateDTO()
+                    {
+                        ISBN = Model.ISBN,
+                        Title = Model.Title,
+                        Publisher = Model.Publisher,
+                        PublishedDate = Model.PublishedDate,
+                        Language = Model.Language,
+                        CoverUrl = Model.CoverUrl,
+                        BookUrl = Model.BookUrl,
+                        UserId = currentUser.Id,
+                    };               
+                var bookId = await InsertBook(book);
+                if(bookId != 0)
+                {
+                    foreach(var author in selectedAuthors)
+                    {
+                        var bookAuthorConnection = new BookAuthorConnectionDTO()
+                            {
+                                BookId = bookId,
+                                AuthorId = author.Id,
+                            };
+                            await InsertAuthorConnection(bookAuthorConnection);
+                    }
+                    foreach (var genre in selectedGenres)
+                    {
+                        var bookGenreConnection = new BookGenreConnectionDTO()
+                            {
+                                BookId = bookId,
+                                GenreId = genre.Id,
+                            };
+                        await InsertGenreConnection(bookGenreConnection);
+                    }
+                }
+
+
+            }
+            else if (Page.Equals(PageType.Edit))
+            {
+                await EditBook(Model); 
+                var book = new BookUpdateDTO()
+                    {
+                        Id = Model.Id,
+                        ISBN = Model.ISBN,
+                        Title = Model.Title,
+                        Publisher = Model.Publisher,
+                        PublishedDate = Model.PublishedDate,
+                        Language = Model.Language,
+                        CoverUrl = Model.CoverUrl,
+                        BookUrl = Model.BookUrl,
+                        UserId = currentUser.Id,
+                    };
+                foreach (var author in selectedAuthors)
+                {
+                    var bookAuthorConnection = new BookAuthorConnectionDTO()
+                        {
+                            BookId = Model.Id,
+                            AuthorId = author.Id,
+                        };
+                    await InsertAuthorConnection(bookAuthorConnection);
+                }
+                foreach (var genre in selectedGenres)
+                {
+                    var bookGenreConnection = new BookGenreConnectionDTO()
+                        {
+                            BookId = Model.Id,
+                            GenreId = genre.Id,
+                        };
+                    await InsertGenreConnection(bookGenreConnection);
+                }
+            }
+            else if (Page.Equals(PageType.Delete))
+            {
+                await DeleteBook(Model.Id);            
+            }
+            await OnChange.InvokeAsync("");
+        }
+        catch
+        {
+            await OnChange.InvokeAsync($"Couldn't process the Book entry!");
+        }
+    }
+
+    private void AddAuthor()
+    {
+        isAuthorFormVisible = true;
+    } 
+    private void CancelAuthor()
+    {
+        isAuthorFormVisible = false;
+    }
+
+    private void AddSelectedAuthor()
+    {
+        var selectedAuthor = Authors.FirstOrDefault(a => a.Id == selectedAuthorId);
+        if (selectedAuthor != null)
+        {
+            if (string.IsNullOrEmpty(displayAuthors))
+                displayAuthors = selectedAuthor.AuthorName;
+            else
+            {
+                if (!displayAuthors.Contains(selectedAuthor.AuthorName))
+                    displayAuthors += $", {selectedAuthor.AuthorName}";
+            }            
+            selectedAuthors.Add(selectedAuthor);
+        }
+        isAuthorFormVisible = false;
+    }
+
+    private void AddGenre()
+    {
+        isGenreFormVisible = true;
+    }
+    private void ClearGenre()
+    {
+        displayGenres = string.Empty;
+    }
+    private void CancelGenre()
+    {
+        isGenreFormVisible = false;
+    }
+    private void AddSelectedGenre()
+    {
+        var selectedGenre = Genres.FirstOrDefault(a => a.Id == selectedGenreId);
+        if (selectedGenre != null)
+        {
+            if (string.IsNullOrEmpty(displayGenres))
+                displayGenres = selectedGenre.Name;
+            else
+            {
+                if(!displayGenres.Contains(selectedGenre.Name))
+                    displayGenres += $", {selectedGenre.Name}";
+            }
+
+            selectedGenres.Add(selectedGenre);
+        }
+        isGenreFormVisible = false;
+    }
+
+    private async Task HandleFileSelect(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+
+        if(file.ContentType.Contains("image"))
+        {
+
+
+                var resizedImage =await file.RequestImageFileAsync("image/png", 300, 500);
+            
+           
+                var content = new MultipartFormDataContent();
+              
+                content.Add(new StreamContent(resizedImage.OpenReadStream()), "file", file.Name);
+
+                var uploadResponse = await UploadImage(content);
+       
+            if (string.IsNullOrEmpty(uploadResponse))
+                errorMessage = "Something went wrong. Try again!";
+            else
+            {
+                selectedCoverImage = uploadResponse.Trim('"');
+                Model.CoverUrl = selectedCoverImage.Trim('"').Replace("storage","localhost");
+            }
+        }
+        else
+        {
+            selectedCoverImage = string.Empty;
+            errorMessage = "File type not supported! Only image files are supported!";
+        }
+        
+    }
+
+    private async Task<List<GenreDTO>> GetGenres()
+    {
+        var response = await _httpClient.GetAsync("api/Genre");
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<List<GenreDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    }
+    private async Task<List<AuthorDTO>> GetAuthors()
+    {
+        var response = await _httpClient.GetAsync("api/Authors");
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<List<AuthorDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    }
+    private async Task<int> InsertBook(BookCreateDTO book)
+    {
+        try
+        {
+            string token = await authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.PostAsJsonAsync("api/Books", book);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<int>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        catch (Exception ex) { Console.WriteLine(ex); return 0; }
+    }
+   private async Task<int> EditBook(BookDTO book)
+    {
+        try
+        {
+            string token = await authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.PutAsJsonAsync($"api/Books/{book.Id}", book);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<int>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        catch (Exception ex) { Console.WriteLine(ex); return 0; }
+    }
+    private async Task DeleteBook(int id)
+    {
+        try
+        {
+            string token = await authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.DeleteAsync($"api/Books/{id}");
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex) { Console.WriteLine(ex); }
+    }
+
+    private async Task<string> UploadImage(MultipartFormDataContent content)
+    {
+        try
+        {
+            string token = await authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.PostAsync("api/Image", content);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+        catch (Exception ex) { Console.WriteLine(ex); return string.Empty; }
+    }
+
+    private async Task InsertAuthorConnection(BookAuthorConnectionDTO dto)
+    {
+        try
+        {
+            string token = await authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.PostAsJsonAsync($"api/BookAuthorConnection",dto);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex) { Console.WriteLine(ex); }
+    }
+
+    private async Task InsertGenreConnection(BookGenreConnectionDTO dto)
+    {
+        try
+        {
+            string token = await authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.PostAsJsonAsync($"api/BookGenreConnection", dto);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex) { Console.WriteLine(ex); }
+    }
+}
