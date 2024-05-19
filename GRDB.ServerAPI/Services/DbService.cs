@@ -41,7 +41,7 @@ namespace GRDB.ServerAPI.Services
             var entities = await _dbContext.Set<TEntity>().Where(expression).ToListAsync();
             return _mapper.Map<List<TDto>>(entities);
         }
-        private async Task<TEntity?> GetAsync<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : class => await _dbContext.Set<TEntity>().SingleOrDefaultAsync(expression);
+        private async Task<TEntity?> GetAsync<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : class => await _dbContext.Set<TEntity>().FirstOrDefaultAsync(expression);
 
         public async Task<TDto> GetAsync<TEntity, TDto>(Expression<Func<TEntity, bool>> expression) where TEntity : class where TDto : class
         {

@@ -14,12 +14,12 @@ namespace GRDB.Server.Common.DTOs
         public int Likes { get; set; }
         public int Dislikes { get; set; }
     }
-    public class BookReviewUpdateDTO
+    public class BookReviewUpdateDTO : BookReviewCreateDTO
     {
         public int Id { get; set; }
     }
 
-    public class BookReviewDTO
+    public class BookReviewDTO : BookReviewUpdateDTO
     {
         public BookDTO Book { get; set; }
         public GrdbUserDTO User { get; set; }

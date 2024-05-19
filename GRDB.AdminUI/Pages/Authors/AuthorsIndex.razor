@@ -13,7 +13,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in GetItemsForCurrentPage())
         {
             <tr>
                 <td>@item.Id</td>
@@ -30,6 +30,11 @@
         }
     </tbody>
 </table>
+    <div class="d-flex flex-row justify-content-around align-items-center">
+        <button class="btn btn-primary" @onclick="GoToPreviousPage" disabled="@IsFirstPage">Previous</button>
+        <span>Page @CurrentPage of @TotalPages</span>
+        <button class="btn btn-primary" @onclick="GoToNextPage" disabled="@IsLastPage">Next</button>
+    </div>
 }
 else
 {
@@ -40,5 +45,32 @@ else
 @code {
     [Parameter] public List<AuthorDTO> Model { get; set; } = new();
     [Parameter] public EventCallback<ClickModel> OnClick { get; set; } 
+
+    private int CurrentPage = 1;
+    private int ItemsPerPage = 20;
+    private int TotalPages => (int)Math.Ceiling((double)Model.Count / ItemsPerPage);
+    private bool IsFirstPage => CurrentPage == 1;
+    private bool IsLastPage => CurrentPage == TotalPages;
+
+    private IEnumerable<AuthorDTO> GetItemsForCurrentPage()
+    {
+        return Model.Skip((CurrentPage - 1) * ItemsPerPage).Take(ItemsPerPage);
+    }
+
+    private void GoToPreviousPage()
+    {
+        if (!IsFirstPage)
+        {
+            CurrentPage--;
+        }
+    }
+
+    private void GoToNextPage()
+    {
+        if (!IsLastPage)
+        {
+            CurrentPage++;
+        }
+    }
 
 }

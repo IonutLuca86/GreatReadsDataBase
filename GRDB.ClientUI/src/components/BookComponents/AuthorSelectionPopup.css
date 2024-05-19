@@ -1,0 +1,72 @@
+.author-selection-popup {
+    position: fixed; /* Ensures popup stays on top of content */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh; /* Fills entire viewport height */
+    /* background-color: rgba(0, 0, 0, 0.5);  */
+    display: flex; /* Centers content vertically and horizontally */
+    justify-content: center;
+    align-items: center;
+    opacity: 0; /* Hide popup initially */
+    visibility: hidden; /* Initially hidden for better accessibility */
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; /* Smooth animations */
+  }
+  .author-selection-popup.active {
+    opacity: 1; /* Show popup when active */
+    visibility: visible; /* Make popup visible when active */
+  }
+  .existing-author-wrapper{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+  .search-wrapper {
+    width: 100%;  
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+  }
+  
+  .search-input {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  .author-list {
+    width: inherit;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    background-color: azure;
+  }
+  .genre-list{
+    width: 350px;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    background-color: azure;
+  }
+  
+  .author-item {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .author-item:hover {
+    background-color: #f5f5f5;
+  }
+  .author-selection-options{
+    margin-top: 2vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+ 

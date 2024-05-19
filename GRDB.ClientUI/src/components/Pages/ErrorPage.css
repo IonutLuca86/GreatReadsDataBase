@@ -1,0 +1,48 @@
+
+ .Error-page{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin:auto; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+.error{
+  width: 60%;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.error-container{
+    color: #F1D0C5;
+    font-family: 'Pacifico', cursive;
+    
+}
+
+.error-text{
+    -webkit-text-stroke: 0.5px #000000;
+    font-size: 2rem;
+    color: gold
+    
+}
+.home-button{
+  background-color: azure;
+  color: #db4c2b;
+  border: 1px solid #db4c2b;
+  border-radius: 10px;
+  margin-left: 0.5vw;
+  width: 120px;
+}
+@media (max-width: 600) {
+  .home-button{
+    width: 120px;
+  }
+}
+
+  

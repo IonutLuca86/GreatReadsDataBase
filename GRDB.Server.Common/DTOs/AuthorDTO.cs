@@ -15,5 +15,6 @@ namespace GRDB.Server.Common.DTOs
     public class AuthorDTO : AuthorCreateDTO
     {
         public int Id { get; set; }
+       
     }
 }

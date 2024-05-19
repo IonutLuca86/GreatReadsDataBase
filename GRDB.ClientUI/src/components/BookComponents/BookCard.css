@@ -1,0 +1,36 @@
+.bookcard-container{
+    width: 15rem;
+    height: 100%;
+    background-color: antiquewhite;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.bookcard-body{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.bookcard-reviews{
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 0.5vw;
+}
+.bookcard-listgroup{
+    background-color: antiquewhite;
+    flex-wrap: wrap;
+} 
+.bookcard-title{
+    color: #db4c2b;
+    font-weight: 600;
+}
+
+@media (max-width: 650px) {
+    .bookcard-container{
+        width: 30rem;
+        height: auto;
+    }
+    
+}

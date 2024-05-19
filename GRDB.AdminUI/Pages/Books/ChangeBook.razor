@@ -162,12 +162,12 @@
         }
         Genres = await GetGenres();
         Authors = await GetAuthors();
-        if(Model.Authors.Any())
+        if(Model.Authors != null && Model.Authors.Any())
             {
             selectedAuthors = Model.Authors;
             displayAuthors = string.Join(", ", Model.Authors.Select(a => a.AuthorName));
             }
-        if(Model.BookGenres.Any())
+        if(Model.BookGenres != null && Model.BookGenres.Any())
         {
             selectedGenres = Model.BookGenres;
             displayGenres = string.Join(", ", Model.BookGenres.Select(a => a.Name));
@@ -345,7 +345,7 @@
             else
             {
                 selectedCoverImage = uploadResponse.Trim('"');
-                Model.CoverUrl = selectedCoverImage.Trim('"').Replace("storage","localhost");
+                Model.CoverUrl = selectedCoverImage.Trim('"').Replace("storage","localhost"); // remove replace when in production
             }
         }
         else

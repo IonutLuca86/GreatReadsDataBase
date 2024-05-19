@@ -40,5 +40,6 @@ namespace GRDB.ServerAPI.Services
 
         Task<bool> DeleteAsync<TReferenceEntity, TDto>(TDto dto) where TReferenceEntity : class where TDto : class;
         void ConnectionUpdate<TReferenceEntity, TDto>(TDto dto) where TReferenceEntity : class, IEntity where TDto : class;
+
     }
 }

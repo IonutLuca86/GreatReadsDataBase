@@ -1,0 +1,147 @@
+.editpage-container{
+    width: 100%;
+    height: auto;
+    margin: auto;
+    padding-top: 2vw;  
+
+}
+.edit-book-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+.form-title{
+    color: #db4c2b;
+}
+.editform-input{
+    width: 40%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.editform-input-authors{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+.selected-authors{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.undo-button{
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    outline: none;
+}
+.selected-authors-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .selected-authors-input {   
+    border: 2px solid #db4c2b;
+    border-radius: 10px;
+    background-color: azure;
+    width: 320px;
+    margin-bottom: 5px;
+  }
+.selected-author{
+    width: 320px;
+    background-color: azure;
+    color: black;
+    border: 2px solid #db4c2b;
+    border-radius: 10px; 
+    margin-bottom: 5px;
+    padding: 2px;
+}
+.editform-input input{
+    width: 350px;
+    background-color: azure;
+    color: black;
+    border: 2px solid #db4c2b;
+    border-radius: 10px;  
+}
+.editform-authorinput{
+    width: 280px !important;
+}
+.editform-saveBtn{
+    background-color: azure;
+    color: black;
+    border: 2px solid #db4c2b;
+    border-radius: 10px; 
+}
+.editform-saveBtn:hover{
+    transform: scale(1.1);
+}
+.editform-addauthorBtn{
+    width: 70px;
+    background-color: azure;
+    color: black;
+    border: 2px solid #db4c2b;
+    border-radius: 10px; 
+}
+.editform-coverUrl{
+    width: 270px;
+    height: 150px;
+    border-radius: 10px;
+    border: 2px solid #db4c2b;
+}
+
+.author-select-wrapper,.genre-select-wrapper {
+    position: relative; 
+  }
+  
+  .author-select-wrapper input {
+    width: 280px; 
+    border: 2px solid #db4c2b;
+    border-radius: 10px; 
+  }
+  .genre-select-wrapper input {
+    width: 350px; 
+    border: 2px solid #db4c2b;
+    border-radius: 10px; 
+  }
+  .genre-suggestion-list {
+    position: absolute;
+    width: 280px;
+    top: 100%; 
+    left: 0; 
+    list-style: none; 
+    padding: 0; 
+    margin: 0; 
+    background-color: azure; 
+    border: 1px solid #db4c2b;
+    border-radius: 4px;  
+    z-index: 10;
+  }
+  .suggestion-list {
+    position: absolute;
+    width: 280px;
+    top: 100%; 
+    left: 0; 
+    list-style: none; 
+    padding: 0; 
+    margin: 0; 
+    background-color: azure; 
+    border: 1px solid #db4c2b;
+    border-radius: 4px; 
+    z-index: 10; 
+  }
+  .genre-suggestion-list li {
+    padding: 5px 10px;
+    cursor: pointer;     
+  }
+  .suggestion-list li {
+    padding: 5px 10px;
+    cursor: pointer;     
+  }

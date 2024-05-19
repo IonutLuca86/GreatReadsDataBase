@@ -20,25 +20,26 @@ namespace GRDB.ServerAPI.Controllers
 
         /// <summary>
         /// List all reviews for a specific user
-        //[HttpGet("user/{id}")]
-        //public async Task<IResult> ListAllReviewsbyUser(int userId)
-        //{
-        //    try
-        //    {
-        //        var reviews = await _db.GetAllAsyncbyId<BookReview, BookReviewDTO>(r => r.UserId == userId);
-        //        return Results.Ok(reviews);
-        //    }
-        //    catch { return Results.NotFound("No items were found!"); }
-        //}
+        [HttpGet("user/{id}")]
+        public async Task<IResult> ListAllReviewsbyUser(int userId)
+        {
+            try
+            {
+                var reviews = await _db.GetAllAsyncbyId<BookReview, BookReviewDTO>(r => r.UserId == userId);
+                return Results.Ok(reviews);
+            }
+            catch { return Results.NotFound("No items were found!"); }
+        }
 
         /// <summary>
         /// List all reviews for a specific book
         [HttpGet("book/{id}")]
-        public async Task<IResult> ListAllReviewsbyBook(int bookId)
+        public async Task<IResult> ListAllReviewsbyBook(int id)
         {
             try
             {
-                var reviews = await _db.GetAllAsyncbyId<BookReview, BookReviewDTO>(r => r.BookId == bookId);
+                _db.Include<GrdbUser>();
+                var reviews = await _db.GetAllAsyncbyId<BookReview, BookReviewDTO>(r => r.BookId == id);
                 return Results.Ok(reviews);
             }
             catch { return Results.NotFound("No items were found!"); }

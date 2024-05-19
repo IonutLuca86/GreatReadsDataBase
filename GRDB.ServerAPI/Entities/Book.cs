@@ -6,8 +6,7 @@ namespace GRDB.ServerAPI.Entities
     public class Book : IEntity
     {
         public int Id { get; set; }
-        public string? ISBN { get; set; }
-        [MaxLength(50), Required]
+        public string? ISBN { get; set; }   
         public string Title { get; set; }
         public string? Publisher { get; set; }
         public string? PublishedDate { get; set; }

@@ -31,80 +31,112 @@ namespace GRDB.ServerAPI.Controllers
         /// <summary>
         /// List all books
         [HttpGet]
-        public async Task<List<BookDTO>> ListAllBooks()
+        public async Task<List<CompleteBookInfo>> ListAllBooks()
         {
             try
             {
                 _db.Include<BookAuthorConnection>();
                 _db.Include<BookGenreConnection>();
-                //_db.Include<BookAuthor>();
-                //_db.Include<BookGenre>();
                 _db.Include<GrdbUser>();
                 var books = await _db.GetAllAsync<Book, BookDTO>();
-                return books;
+                var booksComplete = new List<CompleteBookInfo>();
+                foreach(var book in books)
+                {
+                    var rewiews = await _db.GetAllAsyncbyId<BookReview, BookReviewDTO>(r => r.BookId == book.Id);
+                    var completeBookInfo = new CompleteBookInfo
+                    {
+                        Id = book.Id,
+                        ISBN = book.ISBN,
+                        Title = book.Title,
+                        Publisher = book.Publisher,
+                        PublishedDate = book.PublishedDate,
+                        Language = book.Language,
+                        CoverUrl = book.CoverUrl,
+                        BookUrl = book.BookUrl,
+                        User = book.User,
+                        UserId = book.UserId,
+                        Authors = book.Authors,
+                        BookGenres = book.BookGenres,
+                        BookReviews = rewiews
+                    };
+                    booksComplete.Add(completeBookInfo);
+                }
+                return booksComplete;
             }
             catch { throw; }
-            //  try
-            //  {
-            //      var books = await _dbContext.Book
-            //.Include(b => b.Authors)
-            //    .ThenInclude(ba => ba.Id)
-            //.Include(b => b.BookGenres)
-            //    .ThenInclude(bg => bg.Id)
-            //    .Include(b => b.User)
-            //.ToListAsync();
-
-            //      return _mapper.Map<List<BookDTO>>(books);
-            //  }
-            //  catch
-            //  {
-            //      throw;
-            //  }
+       
         }
 
         /// <summary>
         /// List all books
         [HttpGet("{id:int}")]
-        public async Task<BookDTO> GetBook(int id)
-        {
-            try
-            {
-                _db.Include<BookAuthor>();
-                _db.Include<BookGenre>();
-                _db.Include<GrdbUser>();
-                var book = await _db.GetAsync<Book, BookDTO>(x => x.Id == id);
-                return book;
-            }
-            catch { throw; }
-            //  try
-            //  {
-            //      var books =  _dbContext.Book
-            //.Include(b => b.Authors)
-            //    .ThenInclude(ba => ba.Author)
-            //.Include(b => b.BookGenres)
-            //    .ThenInclude(bg => bg.Genre)
-            //.FirstOrDefault(b => b.Id == id);
-
-            //      return _mapper.Map<BookDTO>(books);
-            //  }
-            //  catch
-            //  {
-            //      throw;
-            //  }
-        }
-
-        /// <summary>
-        /// List all books for a specific user
-        [HttpGet("/{id}/userbooks")]
-        public async Task<IActionResult> ListAllReviewsbyUser(int userId)
+        public async Task<CompleteBookInfo> GetBook(int id)
         {
             try
             {
                 _db.Include<BookAuthorConnection>();
                 _db.Include<BookGenreConnection>();
-                _db.Include<GrdbUser>();
-                var reviews = await _db.GetAllAsyncbyId<Book, BookDTO>(r => r.UserId == userId);
-                return Ok(reviews);
+                _db.Include<GrdbUser>();         
+                var book = await _db.GetAsync<Book, BookDTO>(x => x.Id == id);
+                var reviews = await _db.GetAllAsyncbyId<BookReview, BookReviewDTO>(r => r.BookId == id);
+                var completeBookInfo = new CompleteBookInfo
+                {
+                    Id = book.Id,
+                    ISBN = book.ISBN,
+                    Title = book.Title,
+                    Publisher = book.Publisher,
+                    PublishedDate = book.PublishedDate,
+                    Language = book.Language,
+                    CoverUrl = book.CoverUrl,
+                    BookUrl = book.BookUrl,
+                    User = book.User,
+                    UserId = book.UserId,
+                    Authors = book.Authors,
+                    BookGenres = book.BookGenres,
+                    BookReviews = reviews
+
+                };
+
+                return completeBookInfo;
+            }
+            catch { throw; }
+     
+        }
+
+        /// <summary>
+        /// List all books for a specific user
+        [HttpGet("{id}/userbooks")]
+        public async Task<IActionResult> ListAllBooksbyUser(int id)
+        {
+            try
+            {
+                _db.Include<BookAuthorConnection>();
+                _db.Include<BookGenreConnection>();
+                _db.Include<GrdbUser>();          
+                var books = await _db.GetAllAsyncbyId<Book, BookDTO>(r => r.UserId == id);
+                var completeBooks = new List<CompleteBookInfo>();
+                foreach (var book in books)
+                {
+                    var rewiews = await _db.GetAllAsyncbyId<BookReview, BookReviewDTO>(r => r.BookId == book.Id);
+                    var completeBookInfo = new CompleteBookInfo
+                    {
+                        Id = book.Id,
+                        ISBN = book.ISBN,
+                        Title = book.Title,
+                        Publisher = book.Publisher,
+                        PublishedDate = book.PublishedDate,
+                        Language = book.Language,
+                        CoverUrl = book.CoverUrl,
+                        BookUrl = book.BookUrl,
+                        User = book.User,
+                        UserId = book.UserId,
+                        Authors = book.Authors,
+                        BookGenres = book.BookGenres,
+                        BookReviews = rewiews
+                    };
+                    completeBooks.Add(completeBookInfo);
+                }
+                return Ok(completeBooks);
             }
             catch { return NotFound("No items were found!"); }
         }

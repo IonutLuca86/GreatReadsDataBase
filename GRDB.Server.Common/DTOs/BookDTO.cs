@@ -30,6 +30,11 @@ namespace GRDB.Server.Common.DTOs
     {
         public GrdbUserDTO User { get; set; }
         public List<AuthorDTO> Authors { get; set; }
-        public List<GenreDTO> BookGenres { get; set; }
+        public List<GenreDTO> BookGenres { get; set; }  
+    }
+
+    public class CompleteBookInfo : BookDTO
+    {
+        public List<BookReviewDTO> BookReviews { get; set; }
     }
 }

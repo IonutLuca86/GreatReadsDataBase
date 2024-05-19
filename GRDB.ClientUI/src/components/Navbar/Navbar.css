@@ -1,118 +1,122 @@
-@import url('https://fonts.googleapis.com/css2?family=Merienda:wght@300;400;500;700&family=Poppins:ital,wght@0,300;0,500;1,200&family=Quicksand&display=swap');
-
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+.navbar{
+  width: 100%;
+  margin: 0;
+  border-bottom: 2px solid black;
+  position: absolute;
+  top: 0;
 }
-
-li {
-    list-style: none;
-    display: flex;
+.login-button{
+  background-color: whitesmoke;
+  color:#db4c2b;
+  font-size: large;
+  font-weight: 400;
+  text-align: center;
+  text-decoration: none;
+  width: 10vw;
+  border-radius: 8px;
+  border: 2px solid #db4c2b;
+  box-shadow: 4px 6px #999;
 }
-
-.navbar {
-    background: rgb(178, 178, 243);
-    height: 10vh;
-    line-height: 10vh;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 9999;
+.login-button:hover{
+  transform: scale(1.1);
 }
-
-.logo {
-    font-size: 30px;
-
+.login-button:active {
+  background-color:#db4c2b;
+  color:  white;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
 }
-
-a {
-    text-decoration: none;
+.user-icon{
+  color: cornflowerblue;
 }
-
-.nav-links {
-    display: flex;
-    justify-content: flex-end;
-    width: 75%;
+.navbar-collapse {
+  flex-grow: 0; /* Prevent navbar collapse from taking up full width on small screens */
+  background-color: whitesmoke;
+  z-index: 9999; 
+  /* overflow-y: auto; */
+  /* padding-bottom: 3vw; */
 }
-
-.nav-links li {
-    color: black;
-    font-size: 20px;
-    padding: 0 10px;
-    margin: 0 10px;
-    cursor: pointer;
-    text-transform: capitalize;
+.navbar-logo{
+  width: 17vw;
+  height: 7vw;
+  margin-left: 3vw;
 }
-
-
-.active{
-    background: #ffffff;
-    transition: all 0.5s ease-in-out;
+.navLink{
+  text-decoration: none !important;
+  color: #db4c2b !important;
+  font-size: large !important;
+  box-shadow: inset 0 0 0 0 #db4c2b;
+  transition: color .3s ease-in-out, box-shadow .3s ease-in-out !important;
 }
-.nav-links a {
-    text-decoration: none;
+.navLink:hover{
+  color: #fff !important;
+  box-shadow: inset 200px 0 0 0 #db4c2b;
 }
-
-.hero h1 {
-    text-align: center;
-    font-size: 80px;
+.loggedin{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
 }
-
-button {
-    border: none;
-    background: none;
-    font-size: 20px;
+@media (max-width: 1000px) {
+  .navbar{
+    height: 10vw;
+  }
+  .navbar-collapse {
+    flex:content; /* Prevent navbar collapse from taking up full width on small screens */
+    background-color: aliceblue;
+    padding-bottom: 3vw;
+  }
 }
+@media (max-width: 900px) {
+  .navbar{
+    height: 12vw;
+  }
+  .navbar-nav {
+      flex-direction: column;
+      align-items: start;
+      gap: 1rem; /* Add some spacing between navbar items */
+  }
 
-.mobile-menu-icon {
-    display: none;
+  .navbar-nav.ms-auto {
+      order: -1; /* Move login/logout section above other links on small screens */
+      margin-top: 1rem;
+  }
+
+  .navbar-toggler {
+      border-color: #ddd;
+  }
 }
-
-@media (max-width:768px) {
-    .nav-links {
-        display: none;
-    }
-
-    .nav-links-mobile {
-        position: absolute;
-        display: block;
-        list-style: none;
-        box-shadow: rgba(50, 50, 93, .23) 0 30px 30px -20px;
-        left: 0;
-        top: 10%;
-        transition: all 0.5s ease-in-out;
-        width: 100%;
-        background-color: #ffffff;
-    }
-
-    ul li {
-        padding: 10px;
-        width: 100%;
-        transition: all 0.5s ease-in-out;
-        text-align: center;
-        color: rgb(22, 22, 22);
-    }
-
-    .mobile-menu-icon {
-        position: absolute;
-        display: block;
-        right: 20px;
-        color: #000000b1;
-    }
-
-    .hero h1 {
-        font-size: 50px;
+  @media (max-width: 600px) {
+    .navbar{
+      height: 15vw;
     }
 }
 
-
-/* testing */
-.testing {
-    width: 100%;
-    height: 100vh;
-    background: rgb(178, 178, 243);
+.footer{
+  width: 100%;
+  margin: auto;
+  height: 5vw;
+  max-height: 5vw;
+  position: relative;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  border-top : 2px solid black;
+  margin-top: 3vw;
+  padding: 1vw;
+}
+.copyright{
+  color: #db4c2b;
+  font-size: medium;
+  font-weight: 400;
+}
+.clink{
+ text-decoration: none;
+ margin-bottom: 16px;
+}
+.clink:hover{
+  transform: scale(1.2);
 }

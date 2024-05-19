@@ -1,0 +1,84 @@
+.user-container{
+    width: 100%;
+    height: 72vh;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: baseline;
+    align-items: flex-start;
+    padding-top: 2vw;
+}
+.user-info-container{
+    width: 40%;
+    background-color: azure;
+    margin-left: 1vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 3vw;
+}
+.user-info{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-left: 1vw;
+}
+.cp-button{
+    background-color: azure;
+    color: #db4c2b;
+    border: 1px solid #db4c2b;
+    border-radius: 10px;
+    margin-left: 0.5vw;
+}
+.cp-button:hover{
+    transform: scale(1.1);
+}
+.user-books{
+    width: 59%;
+    background-color: azure;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 1vw;
+    margin-right: 1vw;
+    border-left: 2px solid black;
+}
+.user-book-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-top: 1vw;
+}
+.user-book-info{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: start;
+    padding-left: 1.5vw;
+    padding-right: 1.5vw;
+    padding-bottom: 1vw;
+}
+@media (max-width:1000px) {
+    .user-container{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+    .user-info-container{
+        width: 90%;
+        margin: auto;
+    }
+    .user-books{
+        width: 90%;
+        margin: auto;
+    }
+}
