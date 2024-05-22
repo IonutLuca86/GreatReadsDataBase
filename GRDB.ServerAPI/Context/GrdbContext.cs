@@ -19,21 +19,17 @@ namespace GRDB.ServerAPI.Context
         public DbSet<BookAuthorConnection> BookAuthorConnection { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
-            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            }
+            base.OnModelCreating(modelBuilder);           
 
             modelBuilder.Entity<BookGenreConnection>().HasKey(bg => new { bg.BookId, bg.GenreId });
             modelBuilder.Entity<BookAuthorConnection>().HasKey(ba => new { ba.BookId, ba.AuthorId });
 
-         
+
             modelBuilder.Entity<Book>()
                 .HasMany(a => a.Authors)
                 .WithMany(b => b.Books)
                 .UsingEntity<BookAuthorConnection>().ToTable("BookAuthorConnection");
+
 
             modelBuilder.Entity<Book>()
                 .HasMany(g => g.BookGenres)
@@ -44,12 +40,16 @@ namespace GRDB.ServerAPI.Context
             modelBuilder.Entity<Book>()
                 .HasMany(r => r.BookReviews)
                 .WithOne(br => br.Book)
-                .HasForeignKey(br => br.BookId);
+                .HasForeignKey(br => br.BookId)
+                .OnDelete(DeleteBehavior.NoAction);
+         
 
             modelBuilder.Entity<BookReview>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.Reviews)
                 .HasForeignKey(r => r.UserId);
+            
+           
 
             modelBuilder.Entity<Book>()
                 .HasOne(b => b.User)

@@ -16,17 +16,10 @@
             </div>
         }
         <h3>@Navigation</h3>
-        @if (Navigation == PageType.Create)
-        {
-            <ChangeBook Page="@Navigation" OnChange="OnChange"></ChangeBook>
-        }
-
-        @if (Navigation == PageType.Delete || Navigation == PageType.Edit)
-        {
-            <ChangeBook Page="@Navigation" OnChange="OnChange" Model="Book"></ChangeBook>
-        }
 
 
+       
+            <div class="navigation-fixed">
         <div class="d-flex me-1">
             <a href="/" class="btn btn-outline-secondary rounded-0 me-1">Home</a>
             <button type="button" class="btn btn-outline-primary rounded-0 me-1" @onclick="()=>ChangePageType(PageType.Index)">Index</button>
@@ -36,7 +29,16 @@
                 <button @onclick="Search" class="btn btn-primary">Search</button>
             </div>
         </div>
- 
+            @if (Navigation == PageType.Create)
+            {
+                <ChangeBook Page="@Navigation" OnChange="OnChange"></ChangeBook>
+            }
+
+            @if (Navigation == PageType.Delete || Navigation == PageType.Edit)
+            {
+                <ChangeBook Page="@Navigation" OnChange="OnChange" Model="Book"></ChangeBook>
+            }
+        </div>
         <BooksIndex Model="Model" OnClick="OnClick"></BooksIndex>
 
     </Authorized>

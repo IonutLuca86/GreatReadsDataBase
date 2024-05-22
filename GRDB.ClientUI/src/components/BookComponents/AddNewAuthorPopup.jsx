@@ -1,5 +1,6 @@
 import { useState,useEffect } from 'react';
 import addNewAuthor from '../Functions/AddNewAuthor';
+import './AddNewAuthorPopup.css'
 
 export default function AddNewAuthorPopup({isOpen,onClose,handleNewAuthor}){
 
@@ -20,12 +21,12 @@ export default function AddNewAuthorPopup({isOpen,onClose,handleNewAuthor}){
       }
 
     return(
-        <div className={`author-selection-popup ${isOpen ? 'active' : ''}`}>
-        <div className='popup-content'>
+        <div className={`newauthor-selection-popup ${isOpen ? 'active' : ''}`}>
+        <div className='newauthor-popup-content'>
         <h2>Add New Author</h2>
         <div className='author-selection-addform'>
        
-      <div>
+      <div className='newauthor-selection'>
         <label htmlFor="authorName">Author Name:</label>
         <input
           type="text"
@@ -34,8 +35,8 @@ export default function AddNewAuthorPopup({isOpen,onClose,handleNewAuthor}){
           value={authorName}
           onChange={(e) => setAuthorName(e.target.value)}
         />
-      </div>
-      <div>
+      </div >
+      <div className='newauthor-selection'>
         <label htmlFor="birthDate">Birth Date:</label>
         <input
           type="text"
@@ -45,7 +46,7 @@ export default function AddNewAuthorPopup({isOpen,onClose,handleNewAuthor}){
           onChange={(e) => setBirthDate(e.target.value)}
         />
       </div>
-      <div>
+      <div className='newauthor-selection'>
         <label htmlFor="workCount">Work Count:</label>
         <input
           type="text"
@@ -57,7 +58,7 @@ export default function AddNewAuthorPopup({isOpen,onClose,handleNewAuthor}){
         />
       </div>
       <div>
-      <button type="button" className='editform-saveBtn mt-2' onClick={handleCancel}>Cancel</button>
+      <button type="button" className='editform-saveBtn mt-2 me-2' onClick={handleCancel}>Cancel</button>
       <button type="button" className='editform-saveBtn mt-2' onClick={handleSubmit}>Add New Author</button>
       </div>
     

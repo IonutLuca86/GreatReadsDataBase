@@ -1,6 +1,6 @@
 .user-container{
     width: 100%;
-    height: 72vh;
+    min-height: 72vh;
     margin: auto;
     display: flex;
     flex-direction: row;
@@ -66,6 +66,20 @@
     padding-right: 1.5vw;
     padding-bottom: 1vw;
 }
+
+.user-book-container-header{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px 0 30px ;
+}
+.user-book-booklink{
+    width: 60%;
+    display: flex;
+    flex-wrap: wrap;
+}
 @media (max-width:1000px) {
     .user-container{
         display: flex;
@@ -80,5 +94,6 @@
     .user-books{
         width: 90%;
         margin: auto;
+        border: none;
     }
 }

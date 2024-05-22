@@ -40,13 +40,13 @@ const ReviewComponent = ({ bookId,currentUser}) => {
     setSubmitButtonDisabled(e.target.value.trim() === ''); 
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); 
     try{
       const token = tokenValidation(navigate);
       if(token)
         {  
-          var response = addNewReview(bookId,currentUser.id,reviewText,token); 
+          var response = await addNewReview(bookId,currentUser.id,reviewText,token); 
           if(response)
             {
               fetchData();   
@@ -135,9 +135,9 @@ const handleCancelDelete = () => {
           ></textarea>            
           ) : ( <p>{review.reviewContent}</p>) }
    
-          {review.book.user.id === currentUser.id && ( // Check for current user
+          {review.book.user.id === currentUser.id && ( 
             <div className='review-actions'>
-            {editReviewId === review.id ? ( // Show save/cancel buttons if editing
+            {editReviewId === review.id ? ( 
               <>
                 <button onClick={() => handleSaveReview(review.id)}>Save</button>
                 <button onClick={handleCancelEdit}>Cancel</button>
@@ -169,7 +169,7 @@ const handleCancelDelete = () => {
     <div className="review-container">
       <h2 className='book-title'>Reviews</h2>
       {reviews ? renderReviews() : (<p>Loading...</p>)}
-      {reviews ? reviews.length < initialreviews.length && ( // Check if more reviews exist
+      {reviews ? reviews.length < initialreviews.length && ( 
         <button onClick={handleShowMore} className='login-button'>Show More</button>
       ) : (<></>)}
       <div className="new-review">

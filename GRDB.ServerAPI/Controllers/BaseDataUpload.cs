@@ -38,11 +38,9 @@ namespace GRDB.ServerAPI.Controllers
         public async Task<IActionResult> UploadBaseData(IFormFile csvFile)
         {
             try
-            {
-                using (var reader = new CsvFileReader<CsvTemplate>(csvFile.OpenReadStream()))
-                {
-                    var records = reader.Read().ToList();
-                    foreach (var record in records)
+            {      
+                var records = await GetFileContent(csvFile);
+                foreach (var record in records)
                     {
                         if (record.BookISBN == null || record.Title == null || record.Authors == null || record.CoverUrl == null)
                             continue;
@@ -62,7 +60,7 @@ namespace GRDB.ServerAPI.Controllers
                                         Publisher = record.Publisher,
                                         PublishedDate = record.PublishedDate,
                                         Language = record.Language,
-                                        CoverUrl = coverUrl,
+                                        CoverUrl = coverUrl, 
                                         BookUrl = record.BookLink,
                                         UserId = 1
                                     };
@@ -102,15 +100,28 @@ namespace GRDB.ServerAPI.Controllers
                                                     }
                                                 }
                                             }
+                                        else
+                                        {
+                                            var connection = new BookAuthorConnectionDTO
+                                            {
+                                                BookId = bookEntity.Id,
+                                                AuthorId = authorEntity.Id
+                                            };
+                                            var connectionEntity = await _db.AddConnectionAsync<BookAuthorConnection, BookAuthorConnectionDTO>(connection);
+                                            result = await _db.SaveChangesAsync();
+                                            if (!result)
+                                            {
+                                                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to save the connection");
+                                            }
+                                        }
 
                                         }
-                                        var genres = record.Category.Split(",");
-                                        foreach (var genre in genres)
-                                        {
-                                            var genreEntity = await _db.GetAsync<BookGenre, GenreDTO>(x => x.Name == genre);
+                                        var genres = record.Category;
+                                        
+                                            var genreEntity = await _db.GetAsync<BookGenre, GenreDTO>(x => x.Name == genres);
                                             if (genreEntity == null)
                                             {
-                                                var newGenre = new GenreDTO { Name = genre };
+                                                var newGenre = new GenreDTO { Name = genres };
                                                 var newGenreEntity = await _db.AddAsync<BookGenre, GenreDTO>(newGenre);
                                                 result = await _db.SaveChangesAsync();
                                                 if (!result)
@@ -132,14 +143,28 @@ namespace GRDB.ServerAPI.Controllers
                                                     }
                                                 }
                                             }
+                                        else
+                                        {
+                                            var connection = new BookGenreConnectionDTO
+                                            {
+                                                BookId = bookEntity.Id,
+                                                GenreId = genreEntity.Id
+                                            };
+                                            var connectionEntity = await _db.AddConnectionAsync<BookGenreConnection, BookGenreConnectionDTO>(connection);
+                                            result = await _db.SaveChangesAsync();
+                                            if (!result)
+                                            {
+                                                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to save the connection");
+                                            }
                                         }
+                                        
                                     }
                                 }
 
                             }
 
 
-                        }
+                   
 
                         
                     }
@@ -175,14 +200,14 @@ namespace GRDB.ServerAPI.Controllers
                     var publicAccess = PublicAccessType.Blob;
                     await containerClient.SetAccessPolicyAsync(publicAccess);
 
-                    // Generate a unique filename without an extension
-                    var fileName = $"{Guid.NewGuid()}";
+                    var extension = GetImageExtensionFromContent(imageBytes);
+                    var fileName = $"{Guid.NewGuid()}{extension}";
 
                     var blockBlobClient = containerClient.GetBlockBlobClient(fileName);
                     inputStream.Position = 0; // Reset the position to the beginning of the stream
 
-                    // Use a generic content type since the extension is omitted
-                    await blockBlobClient.UploadAsync(inputStream, new BlobHttpHeaders { ContentType = "application/octet-stream" });
+                    var contentType = GetContentTypeFromExtension(extension);
+                    await blockBlobClient.UploadAsync(inputStream, new BlobHttpHeaders { ContentType = contentType });
 
                     var blobClient = containerClient.GetBlobClient(fileName);
                     return blobClient.Uri.ToString();
@@ -194,6 +219,37 @@ namespace GRDB.ServerAPI.Controllers
                 throw new Exception("Error uploading image: " + ex.Message);
             }
         }
+        private async Task<List<CsvTemplate>> GetFileContent(IFormFile file)
+        {
+            var records = new List<CsvTemplate>();
+
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            {
+
+                await reader.ReadLineAsync();
+
+                string line;
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    var values = line.Split(';');
+
+                    records.Add(new CsvTemplate
+                    {
+                        BookISBN = values[0],
+                        Title = values[1],
+                        Authors = values[2],
+                        Publisher = values[3],
+                        PublishedDate = values[4],
+                        Category = values[5],
+                        Language = values[6],
+                        CoverUrl = values[7],
+                        BookLink = values[8],
+                    });
+                }
+            }
+                return records;
+        }
+
         private static async Task<byte[]> StoreFile(BlockBlobClient blockClient, Stream inputStream)
         {
             var hasher = MD5.Create();
@@ -205,7 +261,50 @@ namespace GRDB.ServerAPI.Controllers
             return hasher.Hash;
         }
 
-        
+        // Helper method to get image extension from byte array
+        private string GetImageExtensionFromContent(byte[] imageBytes)
+        {
+            if (imageBytes.Length < 2)
+            {
+                return ""; // Not enough data to determine extension
+            }
+
+            // Check for common image file format headers
+            if (imageBytes[0] == 0xFF && imageBytes[1] == 0xD8)
+            {
+                return ".jpg";
+            }
+            else if (imageBytes[0] == 0x89 && imageBytes[1] == 'P' && imageBytes[2] == 'N' && imageBytes[3] == 'G')
+            {
+                return ".png";
+            }
+            else if (imageBytes[0] == 0x47 && imageBytes[1] == 'I' && imageBytes[2] == 'F')
+            {
+                return ".gif";
+            }
+            else
+            {
+                // Unknown extension, consider using a library for more robust detection
+                return "";
+            }
+        }
+
+        // Helper method to get content type from extension
+        private string GetContentTypeFromExtension(string extension)
+        {
+            switch (extension.ToLower())
+            {
+                case ".jpg":
+                case ".jpeg":
+                    return "image/jpeg";
+                case ".png":
+                    return "image/png";
+                case ".gif":
+                    return "image/gif";
+                default:
+                    return "application/octet-stream"; // Unknown type, use generic stream
+            }
+        }
 
 
     }
@@ -220,44 +319,9 @@ namespace GRDB.ServerAPI.Controllers
         public string PublishedDate { get; set; }
         public string Category { get; set; }
         public string Language { get; set; }
-        public string CoverUrl { get; set; }
+        public string CoverUrl { get; set; }  
         public string BookLink { get; set; }
-    }
-    public class AuthorTemplate
-    {
-        public string AuthorName { get; set; }
-        public string BirthDate { get; set; }
-        public string WorkCount { get; set; }
-    }
-    public sealed class CsvFileReader<T> : IDisposable
-    {
-        private readonly TextReader _reader;
-        private readonly CsvReader _csvReader;
 
-        public CsvFileReader(Stream filePath)
-        {
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                NewLine = Environment.NewLine,
-                HasHeaderRecord = true,
-                HeaderValidated = null,
-                MissingFieldFound = null,
-                Delimiter = ";",
-            };
-            _reader = new StreamReader(filePath);
-            _csvReader = new CsvReader(_reader, config);
-   
-        }
-
-        public IEnumerable<T> Read()
-        {
-            return _csvReader.GetRecords<T>();
-        }
-
-        public void Dispose()
-        {
-            _csvReader.Dispose();
-            _reader.Dispose();
-        }
-    }
+    }   
+  
 }

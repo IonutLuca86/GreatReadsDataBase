@@ -39,7 +39,7 @@ namespace GRDB.ServerAPI
 
             var connectionString = $"Server={host},{port};Database={database};User Id={user};Password={password};TrustServerCertificate=True;Trusted_Connection=True;MultipleActiveResultSets=true;Integrated Security=False;";
 
-            //var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            // var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<GrdbContext>(options => options.UseSqlServer(connectionString));
 
             ConfigureAutoMapper(builder.Services);
@@ -164,7 +164,8 @@ namespace GRDB.ServerAPI
                 cfg.CreateMap<GrdbUser, GrdbUserUpdateDTO>().ReverseMap();           
                 cfg.CreateMap<Book, BookCreateDTO>().ReverseMap();
                 cfg.CreateMap<Book, BookUpdateDTO>().ReverseMap();
-                cfg.CreateMap<Book, BookDTO>().ReverseMap();
+                cfg.CreateMap<Book, BookDTO>().ReverseMap();                
+                
             });
             var mapper = config.CreateMapper();
             services.AddSingleton(mapper);

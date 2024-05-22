@@ -1,9 +1,34 @@
 import { Link } from 'react-router-dom';
 import './BookListCard.css'
+import { useState,useEffect } from 'react';
 
 export default function BookListCard({book}) {
 
     const numberOfReviews = book.bookReviews && book.bookReviews.length;
+    const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth > 900);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsLargeScreen(window.innerWidth > 1400);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    const normalizeBookTitle = (title) => {
+        if(title.length > 40)
+          {
+            const truncatedTitle = title.slice(0,40)+'...';
+            return truncatedTitle;
+          }
+          else{
+            return title;
+          }
+         
+      }
 
  return(
     <div className="listCard-container">
@@ -15,7 +40,7 @@ export default function BookListCard({book}) {
 
                 <div className='listCard-title'>
                 <p className='me-2 p-title'>Title:</p>
-                    <p className='listCard-booktitle'>{book.title}</p>
+                    <p className='listCard-booktitle'>{  normalizeBookTitle(book.title)}</p>
                 </div>
 
         

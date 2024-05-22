@@ -1,20 +1,21 @@
 .author-selection-popup {
-    position: fixed; /* Ensures popup stays on top of content */
+    position: fixed; 
     top: 0;
     left: 0;
     width: 100%;
-    height: 100vh; /* Fills entire viewport height */
-    /* background-color: rgba(0, 0, 0, 0.5);  */
-    display: flex; /* Centers content vertically and horizontally */
+    height: 100vh;     
+    display: flex; 
     justify-content: center;
     align-items: center;
-    opacity: 0; /* Hide popup initially */
-    visibility: hidden; /* Initially hidden for better accessibility */
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; /* Smooth animations */
+    opacity: 0; 
+    visibility: hidden; 
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; 
+   
   }
   .author-selection-popup.active {
-    opacity: 1; /* Show popup when active */
-    visibility: visible; /* Make popup visible when active */
+    opacity: 1; 
+    visibility: visible; 
+    
   }
   .existing-author-wrapper{
     display: flex;

@@ -28,7 +28,7 @@ useEffect(() => {
     }
   
    
-},[token,dispatch])
+},[token,dispatch,isLoggedIn,expiration,navigate])
   return (
     <div className='layout'>
           <NavbarComponent/>    

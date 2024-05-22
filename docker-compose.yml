@@ -1,6 +1,22 @@
 version: '3.4'
 
 services:
+
+  frontend:
+    container_name: GRDB.ClientUI
+    build:
+      context: .
+      dockerfile: GRDB.ClientUI/Dockerfile
+    ports:
+      - "5173:5173"
+    restart: always
+    profiles:
+      - fullstack
+    command: npm run dev
+    depends_on:
+      - grdb.adminui.server
+
+
   grdb.adminui:
     container_name: adminui
     image: ${DOCKER_REGISTRY-}grdbadminui

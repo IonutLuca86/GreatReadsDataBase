@@ -18,6 +18,9 @@
 }
 .spinner{
    margin-top: 10vw;
+   min-height: 50vh;
+   display: flex;
+   align-items: center;
 }
 .books-header{
     width: 100%;
@@ -30,9 +33,7 @@
     border-bottom: 2px solid black;
     padding-bottom: 1vw;
 }
-.books-search-bar{
-  /* margin-right: 15vw; */
-}
+
 .books-search-bar-input{
   background-color: azure;
     color: black;
@@ -84,6 +85,7 @@
     margin-right: 3vw;
     margin-left: 1vw;
 }
+
 @media (max-width:900px) {
     .books-header{
         height: auto;

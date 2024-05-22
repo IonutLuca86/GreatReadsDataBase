@@ -14,7 +14,7 @@
         {
             <tr>
                 <td class="align-content-center">
-                    <img src="@item.CoverUrl" style="width: 20vw; height: auto;" />
+                    <img src="@item.CoverUrl.Replace("storage","localhost")" style="width: 10vw; height: 10vw;" />
                 </td>
                 <td>
                     <div class="d-flex me-1 flex-column justify-content-start align-items-center">
@@ -53,7 +53,7 @@
                         <div><span>Publisher: </span>@item.Publisher</div>
                         <div><span>Published date: </span>@item.PublishedDate</div>
                         <div><span>Language: </span>@item.Language</div>
-                        <div><span>Book URL: </span><a href="@item.BookUrl" target="_blank">@item.BookUrl</a></div>
+                        <div><span>Book URL: </span><a href="@item.BookUrl" target="_blank">click here</a></div>
                     </div>
                 </td>
                 <td>
@@ -66,7 +66,7 @@
         }
     </tbody>
 </table>
-    <div class="d-flex flex-row justify-content-around align-items-center">   
+    <div class="d-flex flex-row justify-content-around align-items-center mb-5">
         <button class="btn btn-primary" @onclick="GoToPreviousPage" disabled="@IsFirstPage">Previous</button>
         <span>Page @CurrentPage of @TotalPages</span>
         <button class="btn btn-primary" @onclick="GoToNextPage" disabled="@IsLastPage">Next</button>
@@ -74,7 +74,7 @@
 }
 else
     {
-        <p>No authors found</p>
+        <p>No books found</p>
     }
 
 @code {

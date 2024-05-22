@@ -14,6 +14,7 @@ export default function Book() {
     const [currentUser,setCurrentUser] = useState();
     const [showConfirmation, setShowConfirmation] = useState(false);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
  
 
     useEffect(() => {
@@ -25,6 +26,8 @@ export default function Book() {
                 setCurrentUser(user)
             } catch (error) {
                 console.error('Error fetching book info:', error);
+            }finally {
+                setLoading(false); 
             }
         };    
         fetchData();
@@ -40,21 +43,31 @@ export default function Book() {
             const token = tokenValidation(navigate);
             if(token)
               {  
-                await  deleteBook(book.id,token);   
+                if(book.bookReviews.length > 0)
+                    {
+                        alert("Book cannot be deleted because it has active reviews!")
+                        setShowConfirmation(false);
+                    }
+                else  
+                {
+                    await  deleteBook(book.id,token);
+                    navigate('/books')
+                }
+                       
               }
           } catch (error) {
               console.error('Error deleting book:', error);
           }
-    //    navigate('/books')
+     
     };
 
     const handleCancelDelete = () => {
         setShowConfirmation(false);
     };
-
+ console.log(book)
     return(
         <>
-        {book ? (
+        {loading ? (<div className='spinner'><Spinner animation="border" variant="primary" size='20'/></div>) : (
         <div className="book-main-container">
             <div className="book-container">
             <div className="book-cover-container">
@@ -114,7 +127,7 @@ export default function Book() {
                 </div>
                 <div className="book-info">
                     <p className="p-title me-4">Book Url:</p>
-                    <a href={book.bookUrl} target="_blank" rel="noopener noreferrer" className="book-link">{book.bookUrl}</a>
+                    <a href={book.bookUrl} target="_blank" rel="noopener noreferrer" className="book-link">click here</a>
                 </div>
                 {book.user.id === currentUser.id ? (
                     <div className="book-edit">
@@ -146,7 +159,7 @@ export default function Book() {
         </div>
 
         
-         ) : (<Spinner animation="border" variant="primary" size='20' className='spinner'/>)}
+         ) }
         </>
     );
 }

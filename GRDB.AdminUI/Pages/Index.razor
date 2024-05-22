@@ -6,17 +6,19 @@
     <PageTitle>GreatReadsDataBase</PageTitle>
    <AuthorizeView>
        <Authorized>
-            <div class="d-flex flex-column justify-content-between align-items-center mx-auto w-80">
+            <div class="d-flex flex-column justify-content-between align-items-center mx-auto w-80 home-info">
                 <div class="d-flex flex-row"><h1 class="me-5">Welcome </h1> <h1 style="color:cadetblue">  @user.Username</h1></div>
                 <h2> to Great Reads Database management portal!</h2>
                 <h3>Use the menu on the left side to update Great Reads Database!</h3>
+       @*          <img src="~/css/logo-no-background.png" alt="Alternate Text" class="home-logo"/> *@
             </div>
        </Authorized>
        <NotAuthorized>
-            <div class="d-flex flex-column justify-content-between align-items-center mt-5 me-5 w-80">
+            <div class="d-flex flex-column justify-content-between align-items-center mt-5 me-5 w-80 home-info">
                 <h1>Welcome to Great Reads DataBase management portal!</h1>
                 <h2>To be able to use the portal you  need to log in first!</h2>
                 <button @onclick="GoToLogin">Go to Login</button>
+          @*       <img src="./logo-no-background.png" alt="Alternate Text" class="home-logo" /> *@
             </div>
        </NotAuthorized>
    </AuthorizeView>

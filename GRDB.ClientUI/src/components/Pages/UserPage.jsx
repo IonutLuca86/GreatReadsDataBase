@@ -166,15 +166,20 @@ const handleCurrentPass = (event) => {
                     <p className="book-title">Users Contribution</p>
                 </div>
             <div className="user-book-container">
+              <div className="user-book-container-header">
+              <p className='me-2 p-title'>Book Title:</p>
+              <p className='me-2 p-title'>Reviews:</p>
+              </div>
+           
           {books ? (books.map((book) => 
                
                     <div key = {book.id} className="user-book-info">
-                    <div className='listCard-title'>
-                <p className='me-2 p-title'>Book Title:</p>
+                    <div className='listCard-title user-book-booklink'>
+                
                 <Link to={`/book/${book.id}`} key={book.id} className='bookLink' style={{color:'#db4c2b',fontSize:'large'}}>{book.title}</Link> 
                 </div>
                 <div className='listCard-title'>
-                <p className='me-2 p-title'>Reviews:</p>
+              
                     <p className='book-category'>{handleReviews(book.bookReviews)}</p>
                 </div>
                     </div>

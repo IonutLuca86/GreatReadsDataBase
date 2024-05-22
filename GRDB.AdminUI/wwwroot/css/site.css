@@ -66,3 +66,26 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.navigation-fixed {
+    position: sticky;
+    top: 0;
+    min-height: 6vw;
+    z-index: 1000; /* Ensure it is above other elements */
+    background-color: white; /* Background color to avoid overlap issue */
+    padding: 10px 0; /* Padding for some spacing */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: Adds a shadow for better visibility */
+}
+.home-logo{
+    width: 30vw;
+    height: 15vw;
+    margin-top: 3vw;
+}
+.navbar-logo{
+    width: 10vw;
+    height: 5vw;
+    margin-top: 1vw;
+}
+.home-info{
+    margin-top: 5vw;
+}

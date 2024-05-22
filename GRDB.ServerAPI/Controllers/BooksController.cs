@@ -51,7 +51,7 @@ namespace GRDB.ServerAPI.Controllers
                         Publisher = book.Publisher,
                         PublishedDate = book.PublishedDate,
                         Language = book.Language,
-                        CoverUrl = book.CoverUrl,
+                        CoverUrl = book.CoverUrl.Replace("storage","localhost"),
                         BookUrl = book.BookUrl,
                         User = book.User,
                         UserId = book.UserId,
@@ -87,7 +87,7 @@ namespace GRDB.ServerAPI.Controllers
                     Publisher = book.Publisher,
                     PublishedDate = book.PublishedDate,
                     Language = book.Language,
-                    CoverUrl = book.CoverUrl,
+                    CoverUrl = book.CoverUrl.Replace("storage", "localhost"),
                     BookUrl = book.BookUrl,
                     User = book.User,
                     UserId = book.UserId,
@@ -126,7 +126,7 @@ namespace GRDB.ServerAPI.Controllers
                         Publisher = book.Publisher,
                         PublishedDate = book.PublishedDate,
                         Language = book.Language,
-                        CoverUrl = book.CoverUrl,
+                        CoverUrl = book.CoverUrl.Replace("storage", "localhost"),
                         BookUrl = book.BookUrl,
                         User = book.User,
                         UserId = book.UserId,
@@ -141,6 +141,52 @@ namespace GRDB.ServerAPI.Controllers
             catch { return NotFound("No items were found!"); }
         }
 
+        [HttpGet("recommended/{count:int}")]
+        public async Task<List<CompleteBookInfo>> GetRandomBooks(int count)
+        {
+            count = Math.Min(count, await _dbContext.Set<Book>().CountAsync());
+
+            _db.Include<BookAuthorConnection>();
+            _db.Include<BookGenreConnection>();
+            var randomBooks = await _db.GetRandom<Book,BookDTO>(count);                 
+           
+            //var randomBooks = _mapper.Map<List<BookDTO>>(books);
+            var completeBooks = new List<CompleteBookInfo>();
+
+            foreach (var book in randomBooks)
+            {                    
+                    var rewiews = await _db.GetAllAsyncbyId<BookReview, BookReviewDTO>(r => r.BookId == book.Id);
+                    var completeBookInfo = new CompleteBookInfo
+                    {
+                        Id = book.Id,
+                        ISBN = book.ISBN,
+                        Title = book.Title,
+                        Publisher = book.Publisher,
+                        PublishedDate = book.PublishedDate,
+                        Language = book.Language,
+                        CoverUrl = book.CoverUrl.Replace("storage", "localhost"),
+                        BookUrl = book.BookUrl,
+                        User = book.User,
+                        UserId = book.UserId,
+                        Authors = book.Authors,
+                        BookGenres = book.BookGenres,
+                        BookReviews = rewiews
+                    };
+                    completeBooks.Add(completeBookInfo);
+                
+            }
+            return completeBooks;
+        }
+        [HttpGet("toprated/{count:int}")]
+        public async Task<List<BookDTO>> GetBooksByMostReviews(int count)
+        {
+            var books = await _dbContext.Book
+                .OrderByDescending(b => b.BookReviews.Count)
+                .Take(count)
+                .ToListAsync();
+
+            return _mapper.Map<List<BookDTO>>(books);
+        }
         ///summary
         /// add new book
         [Authorize]

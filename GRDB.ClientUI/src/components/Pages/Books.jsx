@@ -12,15 +12,16 @@ import { FaSearch } from "react-icons/fa";
 export default function Books () {
 
     const [allBooks,setAllBooks] = useState([]);
+    const [filteredBooks, setFilteredBooks] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState(''); 
     const [originalBooks,setOriginalBooks] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [booksPerPage] = useState(10);
-
+    const [loading, setLoading] = useState(true);
     const indexOfLastBook = currentPage * booksPerPage;
     const indexOfFirstBook = indexOfLastBook - booksPerPage;
-    const currentBooks = allBooks.slice(indexOfFirstBook, indexOfLastBook);
+    const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const handleNextPage = () => setCurrentPage(currentPage + 1);
     const handlePrevPage = () => setCurrentPage(currentPage - 1);
@@ -30,9 +31,12 @@ export default function Books () {
             try {
                 const books = await getAllBooks();
                 setAllBooks([...books]);
+                setFilteredBooks([...books]);
                 setOriginalBooks([...books]);
             } catch (error) {
                 console.error('Error fetching books:', error);
+            } finally {
+                setLoading(false); 
             }
         };
     
@@ -59,31 +63,34 @@ export default function Books () {
                 const genreMatch = book.bookGenres.some(genre => genre.name.toLowerCase().includes(searchText));
                 return titleMatch || authorMatch || genreMatch;
             });
-            setAllBooks(filteredBooks);      
+            setFilteredBooks(filteredBooks);    
             if(searchText === '')
                 {
-                   setAllBooks(originalBooks );
-                }         
+                    setFilteredBooks(originalBooks);
+                }   
+                setCurrentPage(1);      
         };
 
     const handleSortChange = (selectedOption) => {
         setSortBy(selectedOption);
-
+        const sortedBooks = [...filteredBooks];
         if (selectedOption === 'titleAZ') {
-          const sortedBooks = allBooks.sort((a, b) => a.title.localeCompare(b.title));
+            sortedBooks.sort((a, b) => a.title.localeCompare(b.title));
           setAllBooks(sortedBooks);
         } else if (selectedOption === 'titleZA') {
-          const sortedBooks = allBooks.sort((a, b) => b.title.localeCompare(a.title));
+          sortedBooks.sort((a, b) => b.title.localeCompare(a.title));
           setAllBooks(sortedBooks);
          }
          else if (selectedOption === 'reviews91') {
-            const sortedBooks = allBooks.sort((a, b) => b.bookReviews.length-a.bookReviews.length);
+             sortedBooks.sort((a, b) => b.bookReviews.length-a.bookReviews.length);
             setAllBooks(sortedBooks);
            }
            else if (selectedOption === 'reviews19') {
-            const sortedBooks = allBooks.sort((a, b) => a.bookReviews.length-b.bookReviews.length);
+             sortedBooks.sort((a, b) => a.bookReviews.length-b.bookReviews.length);
             setAllBooks(sortedBooks);
            }
+           setFilteredBooks(sortedBooks);
+        setCurrentPage(1);
       };
 
 
@@ -92,10 +99,10 @@ export default function Books () {
 
     return(
         <>
-        {allBooks ? (
+        {loading ? (<div className='spinner'><Spinner animation="border" variant="primary" size='20'/></div>) : (
             <div className="books-container">
                 <div className='books-header'>
-                    <label className='books-counter'>Showing {currentBooks.length} of {allBooks.length} books</label>
+                    <label className='books-counter'>Showing {currentBooks.length*currentPage} of {filteredBooks.length} books</label>
                 <form className="books-search-bar" onSubmit={handleSubmit}>
                     <input
                         type="text"
@@ -129,11 +136,11 @@ export default function Books () {
             )}
             <div className="books-pagination">
                 <button onClick={handlePrevPage} disabled={currentPage === 1} className='books-pagination-button me-2'>Previous Page</button>
-                <button onClick={handleNextPage} disabled={indexOfLastBook >= allBooks.length} className='books-pagination-button'>Next Page</button>
+                <button onClick={handleNextPage} disabled={indexOfLastBook >= filteredBooks.length} className='books-pagination-button'>Next Page</button>
             </div>
             </div>
             
-        ):(<Spinner animation="border" variant="primary" className='spinner'/>)}
+        )}
        
         </>
     )

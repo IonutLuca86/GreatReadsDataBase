@@ -28,15 +28,16 @@ useEffect(() => {
   else{
     dispatch(logout());
   }
-}, []);
+}, [dispatch]);
 
     const navigate = useNavigate();  
     const handleLogin = () => {
       navigate('/Login');         
     };
 
-    const handleLogout = () => { // Define handleLogout function
-      dispatch(logout()); // Dispatch the logout action
+    const handleLogout = () => { 
+      dispatch(logout()); 
+      navigate('/');
     };
  //console.log(user)
     return (

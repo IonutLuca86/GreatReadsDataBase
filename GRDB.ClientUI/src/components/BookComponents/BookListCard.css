@@ -35,11 +35,14 @@
    margin-left: 1.5vw;
    margin-top: 1vw;
 }
+.listCard-bookinfo-column{
+    margin-right: 2vw;
+}
 .listCard-bookinfo{
     width: 68%;
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-items: center;
     padding-top: 1vw;
 }
@@ -63,12 +66,25 @@
     font-size: large;
     color: #db4c2b;
     font-weight: 600;
+    /* overflow: hidden; */
+    /* text-overflow: ellipsis; */
 }
 .author-link{
     text-decoration: none;
     color: #db4c2b;
 }
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
+    .listCard-container{
+        height: auto;       
+    }
+    .listCard-bookinfo{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: start;
+    }
+}
+@media (max-width: 700px) {
     .listCard-container{
         height: auto;
         display: flex;
@@ -76,6 +92,7 @@
         flex-direction: column;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 2vw;
     }
     .listBook-cover-container{
         width: 80%;
@@ -98,4 +115,5 @@
         justify-content: center;
         align-items: start;
     }
+   
 }

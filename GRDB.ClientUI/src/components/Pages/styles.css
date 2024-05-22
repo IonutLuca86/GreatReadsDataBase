@@ -8,7 +8,7 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;  
-    background-color: #C0C0C0;
+    background-color: #FDF5E6;
     border-left: 1px solid black;
     border-right: 1px solid black;   
     font-family: 'ABeeZee';
@@ -57,9 +57,10 @@
 .card-suggestions{
     width: 96%;  
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
 }
 .book-search-suggestions{
     width: 100%;
@@ -71,23 +72,49 @@
     margin-top: 1vw;
 }
 .rubrik{
-    color: #db4c2b;   
+    color: #db4c2b;
+    margin-bottom: 2vw;
+    padding: 1.5vw;   
 }
 .search-suggestions{
     width: 90%;
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
 }
 
 .searched-books{
     display: flex;
+    flex-wrap: wrap;
     flex-direction: column;
     justify-content: space-between;
     align-items: start;
 }
+.suggestions{
+    margin-top: 2vw;
+}
+.suggestion-title{
+    color: #db4c2b;
+}
 .home-logo{
     width: 40vw;
     height: 15vw;
+}
+.card-image{
+    width: 12vw;
+    height: 15vw;
+}
+@media (max-width: 650px) {
+    .card-suggestions{
+        width: 90%;  
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .card-info{
+        margin-bottom: 1vw;
+    }
 }

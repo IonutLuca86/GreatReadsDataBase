@@ -45,6 +45,7 @@ export default function EditPage() {
     const [language, setLanguage] = useState();
     const [bookUrl, setBookUrl] = useState();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -70,7 +71,9 @@ export default function EditPage() {
                 // setAllGenres(genres);
             } catch (error) {
                 console.error('Error fetching book info:', error);
-            }
+            } finally {
+              setLoading(false); 
+          }
         };    
         fetchData();
     },[bookId]);
@@ -149,7 +152,7 @@ export default function EditPage() {
                     await deleteGenreConnection(initialBookData.id,genre.id,token);
                   });
                 }
-                // navigate(`/book/${initialBookData.id}`);
+                navigate(`/book/${initialBookData.id}`);
               }
             }
            
@@ -159,7 +162,7 @@ console.log(initialBookData)
 
     return(
         <>
-        {initialBookData ? (
+        {loading ? (<div className='spinner'><Spinner animation="border" variant="primary" size='20'/></div>) : (
             <div className="editpage-container">
             <form onSubmit={handleSubmit} className="edit-book-form">
       <h2 className='form-title'>Edit Book Information</h2>
@@ -273,7 +276,7 @@ console.log(initialBookData)
     </form>
   
         </div>
-        ) : (<Spinner animation="border" variant="primary" className='spinner'/>)}
+        ) }
        </> 
     )
 }

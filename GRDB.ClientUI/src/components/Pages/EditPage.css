@@ -3,6 +3,7 @@
     height: auto;
     margin: auto;
     padding-top: 2vw;  
+    margin-bottom: 3vw;
 
 }
 .edit-book-form{
@@ -15,7 +16,8 @@
     color: #db4c2b;
 }
 .editform-input{
-    width: 40%;
+    width: 50%;
+    margin: auto;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -98,7 +100,7 @@
 }
 
 .author-select-wrapper,.genre-select-wrapper {
-    position: relative; 
+    position: relative;   
   }
   
   .author-select-wrapper input {
@@ -110,6 +112,7 @@
     width: 350px; 
     border: 2px solid #db4c2b;
     border-radius: 10px; 
+    
   }
   .genre-suggestion-list {
     position: absolute;
@@ -145,3 +148,16 @@
     padding: 5px 10px;
     cursor: pointer;     
   }
+  @media (max-width:1200px) {
+    .editform-input{
+      width: 65%;
+  }
+}
+@media (max-width:900px) {
+  .editform-input{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

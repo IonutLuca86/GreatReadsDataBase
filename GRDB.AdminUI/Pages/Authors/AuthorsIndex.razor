@@ -30,7 +30,7 @@
         }
     </tbody>
 </table>
-    <div class="d-flex flex-row justify-content-around align-items-center">
+    <div class="d-flex flex-row justify-content-around align-items-center mb-5">
         <button class="btn btn-primary" @onclick="GoToPreviousPage" disabled="@IsFirstPage">Previous</button>
         <span>Page @CurrentPage of @TotalPages</span>
         <button class="btn btn-primary" @onclick="GoToNextPage" disabled="@IsLastPage">Next</button>

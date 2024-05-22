@@ -34,6 +34,13 @@ namespace GRDB.ServerAPI.Services
             var entities = await _dbContext.Set<TEntity>().ToListAsync();
             return _mapper.Map<List<TDto>>(entities);
         }
+        public async Task<List<TDto>> GetRandom<TEntity, TDto>(int count)
+           where TEntity : class
+           where TDto : class
+        {
+            var entities = await _dbContext.Set<TEntity>().Take(count).ToListAsync();
+            return _mapper.Map<List<TDto>>(entities);
+        }
         public async Task<List<TDto>> GetAllAsyncbyId<TEntity, TDto>(Expression<Func<TEntity, bool>> expression)
             where TEntity : class
             where TDto : class
@@ -119,6 +126,8 @@ namespace GRDB.ServerAPI.Services
 
             return true;
         }
+
+
         
 
     }
