@@ -83,7 +83,7 @@ export default function LoginPage () {
         <button type="submit"className='login-button mb-4'>Login</button>
       </form>
       <a href="#" className='mb-2'>Forgot Password?</a>
-      {/* Optional Register button */}
+
       <button onClick={() => navigate('/register')} className='login-button'>Register</button>
     </div>
   );

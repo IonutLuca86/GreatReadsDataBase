@@ -20,10 +20,14 @@ export default function Book() {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const user = await getUserInfo();
+                if(user !== null)
+                    {
+                        setCurrentUser(user);                       
+                    }
                 const response = await getBookInfo(bookId.bookId);
                 setBook(response);
-                const user = await getUserInfo();
-                setCurrentUser(user)
+               
             } catch (error) {
                 console.error('Error fetching book info:', error);
             }finally {
@@ -129,7 +133,7 @@ export default function Book() {
                     <p className="p-title me-4">Book Url:</p>
                     <a href={book.bookUrl} target="_blank" rel="noopener noreferrer" className="book-link">click here</a>
                 </div>
-                {book.user.id === currentUser.id ? (
+                {currentUser && book.user.id === currentUser.id ? (
                     <div className="book-edit">
                         <button className="cp-button">    <Link to={{
                             pathname: `/editbook/${book.id}`,
@@ -153,9 +157,12 @@ export default function Book() {
                 : (<></>)}
             </div>
             </div>
-            <div className="book-reviews-container">
+        
+                <div className="book-reviews-container">
                 <ReviewComponent bookId={book.id} currentUser={currentUser} ></ReviewComponent>
                 </div> 
+         
+            
         </div>
 
         

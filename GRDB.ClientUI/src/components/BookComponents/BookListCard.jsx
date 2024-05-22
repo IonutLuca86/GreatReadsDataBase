@@ -63,12 +63,10 @@ export default function BookListCard({book}) {
                 <div className="listCard-info">
                         <p className='me-2 p-title'>Category: </p>
                         {book.bookGenres && book.bookGenres.length > 0 ? (
-                        book.bookGenres.length === 1 ? (
-                    // Render single genre directly
+                        book.bookGenres.length === 1 ? (                   
                     <p key={book.bookGenres[0].id} className='book-category'>{book.bookGenres[0].name}</p>
                 ) : (
-                    // Render multiple genres separated by comma and space
-                    <p className='book-category'>
+                     <p className='book-category'>
                         {book.bookGenres.map((genre, index) => (
                             <span key={genre.id} >
                                 {genre.name}

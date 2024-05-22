@@ -161,10 +161,7 @@ namespace GRDB.ServerAPI.Controllers
                                     }
                                 }
 
-                            }
-
-
-                   
+                            }   
 
                         
                     }
@@ -194,9 +191,7 @@ namespace GRDB.ServerAPI.Controllers
                     if (!await containerClient.ExistsAsync())
                     {
                         await containerClient.CreateAsync();
-                    }
-
-                    // Ensure the container is publicly accessible
+                    }                 
                     var publicAccess = PublicAccessType.Blob;
                     await containerClient.SetAccessPolicyAsync(publicAccess);
 
@@ -204,7 +199,7 @@ namespace GRDB.ServerAPI.Controllers
                     var fileName = $"{Guid.NewGuid()}{extension}";
 
                     var blockBlobClient = containerClient.GetBlockBlobClient(fileName);
-                    inputStream.Position = 0; // Reset the position to the beginning of the stream
+                    inputStream.Position = 0; 
 
                     var contentType = GetContentTypeFromExtension(extension);
                     await blockBlobClient.UploadAsync(inputStream, new BlobHttpHeaders { ContentType = contentType });
@@ -261,15 +256,14 @@ namespace GRDB.ServerAPI.Controllers
             return hasher.Hash;
         }
 
-        // Helper method to get image extension from byte array
+       
         private string GetImageExtensionFromContent(byte[] imageBytes)
         {
             if (imageBytes.Length < 2)
             {
-                return ""; // Not enough data to determine extension
+                return ""; 
             }
-
-            // Check for common image file format headers
+           
             if (imageBytes[0] == 0xFF && imageBytes[1] == 0xD8)
             {
                 return ".jpg";
@@ -283,13 +277,12 @@ namespace GRDB.ServerAPI.Controllers
                 return ".gif";
             }
             else
-            {
-                // Unknown extension, consider using a library for more robust detection
+            {             
                 return "";
             }
         }
 
-        // Helper method to get content type from extension
+  
         private string GetContentTypeFromExtension(string extension)
         {
             switch (extension.ToLower())
@@ -302,7 +295,7 @@ namespace GRDB.ServerAPI.Controllers
                 case ".gif":
                     return "image/gif";
                 default:
-                    return "application/octet-stream"; // Unknown type, use generic stream
+                    return "application/octet-stream"; 
             }
         }
 

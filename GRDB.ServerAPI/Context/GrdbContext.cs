@@ -60,14 +60,14 @@ namespace GRDB.ServerAPI.Context
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
 
             modelBuilder.Entity<IdentityUserRole<int>>()
-                .HasOne<GrdbUser>() // Specify the type of the user entity
+                .HasOne<GrdbUser>() 
                 .WithMany()
                 .HasForeignKey(ur => ur.UserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<IdentityUserRole<int>>()
-                .HasOne<IdentityRole<int>>() // Specify the type of the role entity
+                .HasOne<IdentityRole<int>>() 
                 .WithMany()
                 .HasForeignKey(ur => ur.RoleId)
                 .IsRequired()

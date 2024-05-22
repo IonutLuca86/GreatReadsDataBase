@@ -36,10 +36,9 @@ namespace GRDB.ServerAPI
                 .AllowAnyHeader()
                 .AllowAnyMethod());
             });
+            // var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
             var connectionString = $"Server={host},{port};Database={database};User Id={user};Password={password};TrustServerCertificate=True;Trusted_Connection=True;MultipleActiveResultSets=true;Integrated Security=False;";
-
-            // var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<GrdbContext>(options => options.UseSqlServer(connectionString));
 
             ConfigureAutoMapper(builder.Services);
@@ -97,24 +96,21 @@ namespace GRDB.ServerAPI
                     Scheme = "bearer",
                     BearerFormat = "JWT"
                 };
-                c.AddSecurityDefinition("Bearer", securityScheme);
-
-                // Make sure Swagger UI requires a Bearer token
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-            });
+                c.AddSecurityDefinition("Bearer", securityScheme);          
+                    c.AddSecurityRequirement(new OpenApiSecurityRequirement    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            Array.Empty<string>()
+                        }
+                    });
+                   });
 
 
             var app = builder.Build();
@@ -172,14 +168,8 @@ namespace GRDB.ServerAPI
         }
 
         public static void InitializeDatabase(GrdbContext dbContext)
-        {
-            // Apply any pending migrations
-            dbContext.Database.Migrate();
-
-            // Add your custom initialization logic here
-            // For example, you can seed initial data or create additional tables
-
-            // Save the changes to the database
+        {         
+            dbContext.Database.Migrate();            
             dbContext.SaveChanges();
         }
     }

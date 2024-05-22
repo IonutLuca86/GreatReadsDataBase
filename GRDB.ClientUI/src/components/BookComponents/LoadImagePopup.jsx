@@ -20,7 +20,7 @@ export default function LoadImagePopup({ isOpen, onClose, onImageSelected }){
           reader.readAsDataURL(file);
         } else {
           setSelectedFile(null);
-          setPreviewImage(null); // Clear preview if invalid file
+          setPreviewImage(null); 
         }
       };
     

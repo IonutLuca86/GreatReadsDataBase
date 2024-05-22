@@ -60,13 +60,10 @@
 
 
     private async Task Search()
-    {
-        Console.WriteLine("Search button clicked."); // Debugging statement
-        Console.WriteLine("Search text: " + searchText); // Debugging statement
-
+    {     
         if (originalModel == null)
         {
-            originalModel = await GetBooks(); // Fetch the original list if not fetched already
+            originalModel = await GetBooks(); 
         }
 
         if (!string.IsNullOrEmpty(searchText))
@@ -79,16 +76,13 @@
      book.BookGenres.Any(x => x.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
      book.Publisher.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
      book.BookUrl.Contains(searchText, StringComparison.OrdinalIgnoreCase)
-     ).ToList();
-
-            Console.WriteLine("Search results count: " + searchResults.Count); // Debugging statement
+     ).ToList();          
 
             Model = searchResults;
         }
         else
-        {
-            Console.WriteLine("Search text is empty. Resetting Model to original list."); // Debugging statement
-            Model = originalModel; // Reset Model to the original list when search text is empty
+        {          
+            Model = originalModel; 
         }
     }
 
@@ -100,7 +94,7 @@
         {
             if (originalModel == null)
             {
-                originalModel = await GetBooks(); // Fetch the original list if not fetched already
+                originalModel = await GetBooks();
             }
             Model = originalModel;
             searchText = string.Empty;
@@ -115,7 +109,7 @@
             if (isAuthenticated)
             {
                 Alert = string.Empty;
-            originalModel = await GetBooks(); // Store the original list
+            originalModel = await GetBooks(); 
             Model = originalModel;
             }
             else

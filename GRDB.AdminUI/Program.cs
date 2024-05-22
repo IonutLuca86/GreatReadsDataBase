@@ -19,14 +19,10 @@ namespace GRDB.AdminUI
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
 
-            //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5500/") });
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://grdb.adminui.server/") });
-
-            //builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://grdb.adminui.server/") });          
 
             builder.Services.AddBlazoredLocalStorage();
 
-            // Register other services
             builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 
             builder.Services.AddScoped<AuthenticationStateProvider>(provider =>

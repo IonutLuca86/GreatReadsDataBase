@@ -60,7 +60,7 @@ function getMostReviews(books,count){
   const normalizeBookTitle = (title) => {
     if(title.length > 25)
       {
-        const truncatedTitle = title.slice(0,20)+'...';
+        const truncatedTitle = title.slice(0,25)+'...';
         return truncatedTitle;
       }
       else{
@@ -82,7 +82,7 @@ function getMostReviews(books,count){
               <h6 className='suggestion-title'>Books with most reviews:</h6>
               <div className='searched-books'>
                 {searchedReviews && searchedReviews.map((book) =>
-                <Link to={`/book/${book.id}`} key={book.id} className='bookLink'> - {book.title}</Link>           
+                <Link to={`/book/${book.id}`} key={book.id} className='bookLink'> - {normalizeBookTitle(book.title)}</Link>           
                 )}
               </div> 
             </div>
@@ -106,7 +106,7 @@ function getMostReviews(books,count){
               <h6 className='suggestion-title'>Most searched categories:</h6>
               <div className='searched-books'>
                 {searchedGenres && searchedGenres.map((genre) =>
-                <Link to={`/search?q=${genre.name}`} key={genre.id} className='bookLink'> - {genre.name}</Link>           
+                <Link to={`/search?q=${encodeURIComponent(genre.name)}`} key={genre.id} className='bookLink'> - {genre.name}</Link>           
                 )}
               </div> 
             </div>           

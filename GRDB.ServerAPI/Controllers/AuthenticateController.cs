@@ -138,14 +138,7 @@ namespace GRDB.ServerAPI.Controllers
         private (string,DateTime) GetToken(List<Claim> authClaims)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SecretKey"]));
-            var algorithm = SecurityAlgorithms.HmacSha256;
-            //if (key.KeySize < 256)
-            //{
-            //    // Generate a new key with the required size (128 bits)
-            //    var newKey = new byte[256 / 8];
-            //    new RNGCryptoServiceProvider().GetBytes(newKey);
-            //    key = new SymmetricSecurityKey(newKey);
-            //}
+            var algorithm = SecurityAlgorithms.HmacSha256;       
 
             var creds = new SigningCredentials(key, algorithm);
             var tokendescriptor = new SecurityTokenDescriptor

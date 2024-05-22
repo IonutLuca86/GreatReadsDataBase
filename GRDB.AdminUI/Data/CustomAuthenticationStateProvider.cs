@@ -40,8 +40,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
             {
                 var claims = new[]
                 {
-                new Claim(ClaimTypes.Name, "user")
-                // Add more claims if needed
+                new Claim(ClaimTypes.Name, "user")              
             };
 
                 var identity = new ClaimsIdentity(claims, "jwt");

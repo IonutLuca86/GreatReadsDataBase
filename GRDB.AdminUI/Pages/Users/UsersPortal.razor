@@ -136,17 +136,13 @@
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var response = await _httpClient.GetAsync("api/Authenticate");
             if (response.IsSuccessStatusCode)
-            {
-                // Read the response content
-                var content = await response.Content.ReadAsStringAsync();
-
-                // Deserialize the JSON content into a list of LoggedUser objects
+            {               
+                var content = await response.Content.ReadAsStringAsync();                
                 var users = JsonSerializer.Deserialize<List<LoggedUser>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 return users;
             }
             else
-            {
-                // Handle unsuccessful response
+            {            
                 Console.WriteLine("Failed to fetch users. Status code: " + response.StatusCode);
                 return new List<LoggedUser>();
             }

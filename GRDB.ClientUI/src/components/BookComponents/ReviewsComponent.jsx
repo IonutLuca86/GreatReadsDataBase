@@ -6,10 +6,11 @@ import addNewReview from '../Functions/AddNewReview';
 import { useNavigate } from 'react-router-dom';
 import getBookReviews from '../Functions/GetBookReviews';
 import editReview from '../Functions/EditReview';
+import getUserInfo from '../Functions/GetUserInfo';
 
 
 
-const ReviewComponent = ({ bookId,currentUser}) => {
+const ReviewComponent = ({bookId}) => {
   const navigate = useNavigate();
   const [initialreviews,setInitialReviews] = useState([]);
   const [reviews, setReviews] = useState();
@@ -19,6 +20,7 @@ const ReviewComponent = ({ bookId,currentUser}) => {
   const [editedReviewContent, setEditedReviewContent] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [reviewIdToDelete,setReviewIdToDelete] = useState();
+  const [currentUser,setCurrentUser] = useState();
 
   const fetchData = async () => {
     try {       
@@ -26,6 +28,12 @@ const ReviewComponent = ({ bookId,currentUser}) => {
         const sortedReviews = reviewsResponse.sort((a,b) => b.id-a.id);
         setInitialReviews(sortedReviews);
         setReviews(sortedReviews.slice(0,5));
+        const user = await getUserInfo();
+        console.log(user)
+        if(user !== null)
+            {
+                setCurrentUser(user);                       
+            }
     } catch (error) {
         console.error('Error fetching book info:', error);
     }
@@ -89,14 +97,13 @@ const ReviewComponent = ({ bookId,currentUser}) => {
         }
    }catch (error) {
       console.error('Error fetching book info:', error);
-  }
-    console.log('Saving review content:', editedReviewContent); // Example for now
-    setEditReviewId(null); // Clear edited review ID
+  }  
+    setEditReviewId(null); 
   };
 
   const handleCancelEdit = () => {
-    setEditReviewId(null); // Clear edited review ID
-    setEditedReviewContent(''); // Clear edited content
+    setEditReviewId(null); 
+    setEditedReviewContent('');
   };
   const handleConfirmDelete = async () => { 
     setShowConfirmation(false);
@@ -126,7 +133,7 @@ const handleCancelDelete = () => {
     return reviews.length > 0 ? reviews.map((review) => (
       <div key={review.id} className="review-item">
         <div className="review-user">
-          <span >{review.book.user.userName}:</span>
+          <span >{review.user.userName}:</span>
         </div>
         <div className="review-content">
           {editReviewId === review.id ? (<textarea
@@ -135,7 +142,7 @@ const handleCancelDelete = () => {
           ></textarea>            
           ) : ( <p>{review.reviewContent}</p>) }
    
-          {review.book.user.id === currentUser.id && ( 
+          {review.user.id === currentUser.id && ( 
             <div className='review-actions'>
             {editReviewId === review.id ? ( 
               <>
@@ -172,6 +179,7 @@ const handleCancelDelete = () => {
       {reviews ? reviews.length < initialreviews.length && ( 
         <button onClick={handleShowMore} className='login-button'>Show More</button>
       ) : (<></>)}
+      {currentUser &&
       <div className="new-review">
         <h3 className='book-title'>Leave a Review</h3>
         <form className="review-form" onSubmit={handleSubmit}>     
@@ -186,7 +194,7 @@ const handleCancelDelete = () => {
         Submit Review
       </button>
     </form>      
-      </div>
+      </div>}
     </div>
   );
 };

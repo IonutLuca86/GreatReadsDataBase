@@ -200,8 +200,8 @@ console.log(initialBookData)
         {isAuthorPopupOpen && (<AuthorSelectionPopup isOpen={isAuthorPopupOpen} 
         onClose={() => setIsAuthorPopupOpen(false)} 
         existingAuthors={existingAuthors}
-        currentAuthor={selectedAuthor.join(', ')} // Pass comma-separated selected authors
-        onReplaceAuthor={handleReplaceAuthor} // Replace function callback
+        currentAuthor={selectedAuthor.join(', ')} 
+        onReplaceAuthor={handleReplaceAuthor} 
         onAddAuthor={handleAddAuthor}  ></AuthorSelectionPopup>)} 
       </div>
       
